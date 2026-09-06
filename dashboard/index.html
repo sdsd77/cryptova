@@ -563,28 +563,11 @@
                         <h2 style="font-size: 1.1rem; font-weight: 700;"><i class="fas fa-money-bill-wave" style="color: var(--accent-gold);"></i> سعر صرف الريال</h2>
                         <button class="btn btn-outline btn-sm" onclick="exchangeForceRefresh()"><i class="fas fa-sync-alt"></i> جلب تلقائي الآن</button>
                     </div>
-                    <div class="cmp-note">سعر الدولار مقابل الريال اليمني. يُجلب تلقائياً كل 30 دقيقة. عند التعديل اليدوي يتوقف الجلب التلقائي حتى تعيد تفعيله.</div>
+                    <div class="cmp-note">أسعار العملات مقابل الريال اليمني لصنعاء وعدن. يُجلب تلقائياً كل 30 دقيقة. عند التعديل اليدوي يتوقف الجلب التلقائي حتى تعيد تفعيله.</div>
 
                     <div id="exchangeStatus" style="font-size: 0.9rem; margin-bottom: 16px; color: var(--text-muted);"></div>
 
-                    <div class="cmp-form-grid" style="grid-template-columns: repeat(4, 1fr);">
-                        <div>
-                            <label class="cmp-label">صنعاء · شراء</label>
-                            <input class="cmp-input" type="number" id="exSanaaBuy" min="1" step="1">
-                        </div>
-                        <div>
-                            <label class="cmp-label">صنعاء · بيع</label>
-                            <input class="cmp-input" type="number" id="exSanaaSell" min="1" step="1">
-                        </div>
-                        <div>
-                            <label class="cmp-label">عدن · شراء</label>
-                            <input class="cmp-input" type="number" id="exAdenBuy" min="1" step="1">
-                        </div>
-                        <div>
-                            <label class="cmp-label">عدن · بيع</label>
-                            <input class="cmp-input" type="number" id="exAdenSell" min="1" step="1">
-                        </div>
-                    </div>
+                    <div id="exchangeGrid"></div>
 
                     <div class="cmp-toolbar" style="margin: 0; margin-top: 16px;">
                         <button class="btn btn-gold" onclick="saveExchange()"><i class="fas fa-save"></i> حفظ (بشكل يدوي)</button>
@@ -1309,19 +1292,72 @@
         }
 
         // ---------- EXCHANGE RATES ----------
+        var EX_CURR = [
+            { code: 'usd', name: 'دولار أمريكي' },
+            { code: 'sar', name: 'ريال سعودي' },
+            { code: 'aed', name: 'درهم إماراتي' },
+            { code: 'omr', name: 'ريال عماني' },
+            { code: 'kwd', name: 'دينار كويتي' },
+            { code: 'eur', name: 'يورو' },
+            { code: 'try', name: 'ليرة تركية' },
+            { code: 'cny', name: 'يوان صيني' },
+        ];
+
         function exStatusHtml(data, note) {
             var src = data.source === 'manual' ? ' (تعديل يدوي — الجلب التلقائي متوقف)' : ' (جلب تلقائي)';
             var when = data.updatedAt ? ' آخر تحديث: ' + new Date(data.updatedAt).toLocaleString('ar-SA') : '';
             return note + src + when;
         }
 
+        function exInputId(code, region, side) {
+            return 'ex-' + code + '-' + region + '-' + side;
+        }
+
+        function exCell(code, region, side, value) {
+            return '<td><input class="cmp-input" type="number" id="' + exInputId(code, region, side) +
+                '" min="0" step="any" value="' + (value || '') + '"></td>';
+        }
+
         function exFill(data) {
-            document.getElementById('exSanaaBuy').value = data.sanaa.buy;
-            document.getElementById('exSanaaSell').value = data.sanaa.sell;
-            document.getElementById('exAdenBuy').value = data.aden.buy;
-            document.getElementById('exAdenSell').value = data.aden.sell;
+            var grid = document.getElementById('exchangeGrid');
+            if (!grid) return;
+            var html = '<table class="cmp-table" style="width:100%;border-collapse:collapse;font-size:0.9rem;margin-bottom:12px;">' +
+                '<thead><tr><th style="padding:6px;text-align:right;border-bottom:1px solid rgba(255,255,255,.1)">العملة</th>' +
+                '<th style="padding:6px;border-bottom:1px solid rgba(255,255,255,.1)">صنعاء · شراء</th>' +
+                '<th style="padding:6px;border-bottom:1px solid rgba(255,255,255,.1)">صنعاء · بيع</th>' +
+                '<th style="padding:6px;border-bottom:1px solid rgba(255,255,255,.1)">عدن · شراء</th>' +
+                '<th style="padding:6px;border-bottom:1px solid rgba(255,255,255,.1)">عدن · بيع</th></tr></thead><tbody>';
+            EX_CURR.forEach(function(c) {
+                var san = (data && data.sanaa && data.sanaa[c.code]) || {};
+                var aden = (data && data.aden && data.aden[c.code]) || {};
+                html += '<tr><td style="padding:6px;text-align:right;border-bottom:1px solid rgba(255,255,255,.06)">' + c.name +
+                    ' <span style="color:var(--text-muted);font-size:0.8rem">' + c.code.toUpperCase() + '</span></td>' +
+                    exCell(c.code, 'sanaa', 'buy', san.buy) +
+                    exCell(c.code, 'sanaa', 'sell', san.sell) +
+                    exCell(c.code, 'aden', 'buy', aden.buy) +
+                    exCell(c.code, 'aden', 'sell', aden.sell) +
+                    '</tr>';
+            });
+            html += '</tbody></table>';
+            grid.innerHTML = html;
             document.getElementById('exchangeStatus').textContent = exStatusHtml(data, 'الوضع الحالي:');
             document.getElementById('exchangeMessage').textContent = '';
+        }
+
+        function exCollect() {
+            var currencies = {};
+            var ok = true;
+            EX_CURR.forEach(function(c) {
+                var pair = {};
+                ['sanaa', 'aden'].forEach(function(region) {
+                    var buy = parseFloat(document.getElementById(exInputId(c.code, region, 'buy')).value);
+                    var sell = parseFloat(document.getElementById(exInputId(c.code, region, 'sell')).value);
+                    if (!(buy > 0) || !(sell > 0)) { ok = false; return; }
+                    pair[region] = { buy: buy, sell: sell };
+                });
+                currencies[c.code] = pair;
+            });
+            return ok ? currencies : null;
         }
 
         async function loadExchange() {
@@ -1336,11 +1372,8 @@
         }
 
         async function saveExchange() {
-            var sanaaBuy = parseFloat(document.getElementById('exSanaaBuy').value);
-            var sanaaSell = parseFloat(document.getElementById('exSanaaSell').value);
-            var adenBuy = parseFloat(document.getElementById('exAdenBuy').value);
-            var adenSell = parseFloat(document.getElementById('exAdenSell').value);
-            if (!sanaaBuy || !sanaaSell || !adenBuy || !adenSell || sanaaBuy < 1 || sanaaSell < 1 || adenBuy < 1 || adenSell < 1) {
+            var currencies = exCollect();
+            if (!currencies) {
                 document.getElementById('exchangeMessage').textContent = '⚠️ أدخل قيماً صحيحة أكبر من 0';
                 return;
             }
@@ -1348,7 +1381,7 @@
                 await fetch('/api/content/exchange', {
                     method: 'PUT',
                     headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
-                    body: JSON.stringify({ sanaa: { buy: sanaaBuy, sell: sanaaSell }, aden: { buy: adenBuy, sell: adenSell } }),
+                    body: JSON.stringify({ mode: 'manual', currencies: currencies }),
                 }).then(handleApiResponse);
                 document.getElementById('exchangeMessage').textContent = '✔️ تم الحفظ يدوياً';
                 loadExchange();

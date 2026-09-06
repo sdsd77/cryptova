@@ -1,28 +1,83 @@
 /* ============================================
-   Cryptova - Yemeni Riyal (YER) exchange rates
-   - Auto-fetches USD/YER buy & sell from ye-rial.com (Sanaa & Aden)
-   - Falls back to stored values, then to sensible defaults
-   - Admin can override manually (mode: 'auto' | 'manual')
-   - TTL: 30 minutes (fresh check), respects 'manual' mode
+   Cryptova - Yemeni Riyal (YER) multi-currency exchange rates
+
+   Sources (priority order):
+     1) naqdilive.com  -> local buy/sell per region (Sanaa & Aden) for:
+        USD, SAR, AED, OMR, KWD, EUR
+     2) open.er-api.com -> international USD mid-rates, derive TRY & CNY
+        (and any missing local currency) by scaling the local USD rate
+     3) Stored persisted values, then built-in constants
+
+   Admin can override manually (mode: 'auto' | 'manual').
+   TTL: 30 minutes (fresh check), respects 'manual' mode.
+   Shape: { source, updatedAt, sanaa: { code: {buy,sell}, ... }, aden: {...} }
    ============================================ */
 
 const { dbModule } = require('./db');
 
-const DEFAULT_RATES = {
-  source: 'auto',
-  updatedAt: null,
+const REGIONS = ['sanaa', 'aden'];
+
+// usdValue = approximate USD value of one unit (used to derive currencies
+// that are not locally quoted, and as a final fallback).
+const CURRENCIES = {
+  usd: { name: 'دولار أمريكي', usdValue: 1 },
+  sar: { name: 'ريال سعودي', usdValue: 1 / 3.75 },
+  aed: { name: 'درهم إماراتي', usdValue: 1 / 3.6725 },
+  omr: { name: 'ريال عماني', usdValue: 2.6 },
+  kwd: { name: 'دينار كويتي', usdValue: 3.26 },
+  eur: { name: 'يورو', usdValue: 1.09 },
+  try: { name: 'ليرة تركية', usdValue: 1 / 48 },
+  cny: { name: 'يوان صيني', usdValue: 1 / 6.8 },
+};
+
+const LOCAL_SOURCE_CODES = ['usd', 'sar', 'aed', 'omr', 'kwd', 'eur'];
+const INTL_SOURCE_CODES = ['try', 'cny'];
+
+const NAME_MAP = {
+  'دولار أمريكي': 'usd',
+  'ريال سعودي': 'sar',
+  'درهم إماراتي': 'aed',
+  'ريال عماني': 'omr',
+  'دينار كويتي': 'kwd',
+  'يورو': 'eur',
+};
+
+const DEFAULT_USD = {
   sanaa: { buy: 533, sell: 536 },
   aden: { buy: 1554, sell: 1562 },
 };
 
 const TTL_MS = 30 * 60 * 1000;
-const FETCH_TIMEOUT_MS = 10000;
+const FETCH_TIMEOUT_MS = 12000;
+
+const NAQ_URL = (region) => `https://naqdilive.com/currencies/${region}`;
+const INTL_URL = 'https://open.er-api.com/v6/latest/USD';
 
 let refreshTimer = null;
 let cache = null;
 
+function defaultRates() {
+  const build = (regionUsd) => {
+    const region = {};
+    for (const code of Object.keys(CURRENCIES)) {
+      const v = CURRENCIES[code].usdValue;
+      region[code] = {
+        buy: Math.round(regionUsd.buy * v * 100) / 100,
+        sell: Math.round(regionUsd.sell * v * 100) / 100,
+      };
+    }
+    return region;
+  };
+  return {
+    source: 'auto',
+    updatedAt: null,
+    sanaa: build(DEFAULT_USD.sanaa),
+    aden: build(DEFAULT_USD.aden),
+  };
+}
+
 function parseNumbers(str) {
-  const digits = String(str || '').replace(/[^\d.]/g, '');
+  const digits = String(str || '').replace(/,/g, '').replace(/[^\d.]/g, '');
   const num = parseFloat(digits);
   return Number.isFinite(num) && num > 0 ? num : null;
 }
@@ -42,53 +97,131 @@ async function fetchWithTimeout(url) {
   }
 }
 
-function parseYeRial(html) {
-  // Collect every table row that has at least 3 cells.
-  const rows = [];
-  const rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+// naqdilive.com uses a card per currency: name (text-lg) then شراء/بيع values.
+function parseNaq(html) {
+  const cards = {};
+  const re = /<div class="font-bold text-gray-900 dark:text-white text-lg">([^<]+)<\/div>[\s\S]*?شراء<\/span>\s*<span[^>]*>([\d,]+(?:\.\d+)?)<\/span>\s*<\/div>\s*<div>\s*<span[^>]*>بيع<\/span>\s*<span[^>]*>([\d,]+(?:\.\d+)?)<\/span>/g;
   let m;
-  while ((m = rowRe.exec(html)) !== null) {
-    const cells = [];
-    const cellRe = /<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi;
-    let cm;
-    while ((cm = cellRe.exec(m[1])) !== null) {
-      cells.push(cm[1].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim());
+  while ((m = re.exec(html)) !== null) {
+    const code = NAME_MAP[m[1].trim()];
+    if (!code) continue;
+    const buy = parseNumbers(m[2]);
+    const sell = parseNumbers(m[3]);
+    if (buy && sell) cards[code] = { buy, sell };
+  }
+  return cards;
+}
+
+// Prefer live international rates; fall back to our constant usdValue table.
+async function fetchIntlUsdValues() {
+  try {
+    const body = await fetchWithTimeout(INTL_URL);
+    const data = JSON.parse(body);
+    const rates = data && data.rates;
+    if (!rates) throw new Error('No rates in intl payload');
+    const out = {};
+    for (const code of INTL_SOURCE_CODES) {
+      const perUsd = rates[code.toUpperCase()];
+      if (Number.isFinite(perUsd) && perUsd > 0) out[code] = 1 / perUsd;
     }
-    if (cells.length >= 3) rows.push(cells);
+    return out;
+  } catch (err) {
+    console.error('exchange-rates: intl fetch failed (falling back to constants):', err.message);
+    const out = {};
+    for (const code of INTL_SOURCE_CODES) out[code] = CURRENCIES[code].usdValue;
+    return out;
+  }
+}
+
+// Mirror the region's local USD spread onto a derived pair.
+function derivePairFromUsd(usdPair, usdValue) {
+  return {
+    buy: Math.round(usdPair.buy * usdValue * 100) / 100,
+    sell: Math.round(usdPair.sell * usdValue * 100) / 100,
+  };
+}
+
+function ensureAllCurrencies(region) {
+  const usd = region.usd;
+  for (const code of Object.keys(CURRENCIES)) {
+    const r = region[code];
+    if (!r || !(r.buy && r.sell)) {
+      region[code] = derivePairFromUsd(usd, CURRENCIES[code].usdValue);
+    }
+  }
+}
+
+async function tryFetchOnline() {
+  const [sanaaHtml, adenHtml] = await Promise.all([
+    fetchWithTimeout(NAQ_URL('sanaa')),
+    fetchWithTimeout(NAQ_URL('aden')),
+  ]);
+  const cards = {
+    sanaa: parseNaq(sanaaHtml),
+    aden: parseNaq(adenHtml),
+  };
+
+  const result = { sanaa: {}, aden: {} };
+  for (const region of REGIONS) {
+    const regionMap = cards[region];
+    const usd = regionMap.usd || DEFAULT_USD[region];
+    result[region].usd = usd;
+
+    for (const code of LOCAL_SOURCE_CODES) {
+      const pair = regionMap[code];
+      if (pair && pair.buy && pair.sell) result[region][code] = pair;
+      else result[region][code] = derivePairFromUsd(usd, CURRENCIES[code].usdValue);
+    }
   }
 
-  // Find USD rows: the one row whose first cell contains 'دولار'.
-  const results = [];
-  for (const cells of rows) {
-    if (cells[0] && /دولار/i.test(cells[0])) {
-      const buy = parseNumbers(cells[1]);
-      const sell = parseNumbers(cells[2]);
-      if (buy && sell) results.push({ buy, sell });
+  // TRY & CNY derived from international mid-rates (source of truth for those).
+  const intl = await fetchIntlUsdValues();
+  for (const region of REGIONS) {
+    for (const code of INTL_SOURCE_CODES) {
+      const v = intl[code] || CURRENCIES[code].usdValue;
+      result[region][code] = derivePairFromUsd(result[region].usd, v);
     }
   }
 
-  // ye-rial.com main page: first table = Sanaa, second table = Aden.
-  if (results.length >= 2) return { sanaa: results[0], aden: results[1] };
-  if (results.length === 1) return { sanaa: results[0], aden: results[0] };
-  throw new Error('No USD rows found');
+  return result;
+}
+
+// --- Legacy migration -------------------------------------------------------
+// Old shape was USD-only: { sanaa:{buy,sell}, aden:{buy,sell} }.
+// New shape:             { sanaa:{ usd:{buy,sell}, sar:{...}, ... }, aden: {...} }.
+function migrate(ex) {
+  const out = { sanaa: {}, aden: {} };
+  for (const region of REGIONS) {
+    const r = ex && ex[region];
+    if (!r) {
+      out[region] = defaultRates()[region];
+      continue;
+    }
+    if (typeof r.buy === 'number') {
+      out[region].usd = { buy: r.buy, sell: r.sell };
+    } else {
+      out[region] = { ...r };
+    }
+    ensureAllCurrencies(out[region]);
+  }
+  return out;
 }
 
 async function loadPersisted() {
   try {
     const content = await dbModule.getContent();
     const ex = content && content.exchangeRates;
-    if (ex && ex.sanaa && ex.aden) {
+    if (ex && (ex.sanaa || ex.aden)) {
       cache = {
         source: ex.source === 'manual' ? 'manual' : 'auto',
         updatedAt: ex.updatedAt || null,
-        sanaa: { buy: parseNumbers(ex.sanaa.buy) || DEFAULT_RATES.sanaa.buy, sell: parseNumbers(ex.sanaa.sell) || DEFAULT_RATES.sanaa.sell },
-        aden: { buy: parseNumbers(ex.aden.buy) || DEFAULT_RATES.aden.buy, sell: parseNumbers(ex.aden.sell) || DEFAULT_RATES.aden.sell },
+        ...migrate(ex),
       };
     }
   } catch (err) {
     console.error('exchange-rates: loadPersisted error:', err.message);
   }
-  if (!cache) cache = { ...DEFAULT_RATES, sanaa: { ...DEFAULT_RATES.sanaa }, aden: { ...DEFAULT_RATES.aden } };
+  if (!cache) cache = defaultRates();
   return cache;
 }
 
@@ -98,8 +231,8 @@ async function persist(rates) {
     content.exchangeRates = {
       source: rates.source,
       updatedAt: rates.updatedAt,
-      sanaa: { buy: rates.sanaa.buy, sell: rates.sanaa.sell },
-      aden: { buy: rates.aden.buy, sell: rates.aden.sell },
+      sanaa: rates.sanaa,
+      aden: rates.aden,
     };
     await dbModule.saveContent(content);
   } catch (err) {
@@ -107,14 +240,8 @@ async function persist(rates) {
   }
 }
 
-async function tryFetchOnline() {
-  const html = await fetchWithTimeout('https://ye-rial.com/');
-  return parseYeRial(html);
-}
-
 async function refreshFromSource({ force } = {}) {
   await loadPersisted();
-  // Manual override always wins; force only refreshes the auto source.
   if (cache.source === 'manual') return cache;
   if (!force && cache.updatedAt && Date.now() - new Date(cache.updatedAt).getTime() < TTL_MS) return cache;
   try {
@@ -124,7 +251,9 @@ async function refreshFromSource({ force } = {}) {
     cache.sanaa = fresh.sanaa;
     cache.aden = fresh.aden;
     await persist(cache);
-    console.log(`🌙 Exchange rates refreshed: Sanaa ${cache.sanaa.buy}/${cache.sanaa.sell} · Aden ${cache.aden.buy}/${cache.aden.sell}`);
+    const u = cache.sanaa.usd;
+    const a = cache.aden.usd;
+    console.log(`🌙 Exchange rates refreshed: Sanaa USD ${u.buy}/${u.sell} · Aden USD ${a.buy}/${a.sell} (${Object.keys(cache.sanaa).length} currencies)`);
   } catch (err) {
     console.error('exchange-rates: auto-fetch failed:', err.message);
     if (!cache.updatedAt) cache.updatedAt = new Date().toISOString();
@@ -142,18 +271,35 @@ async function getRates({ force } = {}) {
   return cache;
 }
 
-async function setManualRates({ sanaa, aden }) {
+// { currencies: { usd: {sanaa:{buy,sell}, aden:{buy,sell}}, sar: {...}, ... } }
+// Backward-compatible with the old { sanaa:{buy,sell}, aden:{buy,sell} } (USD).
+async function setManualRates({ currencies }) {
   await loadPersisted();
+  const map = currencies || {};
+  let legacyUsd = null;
+  if (map.sanaa && typeof map.sanaa.buy === 'number') {
+    legacyUsd = { sanaa: map.sanaa, aden: (map.aden || {}).sell ? map.aden : null };
+  }
   cache.source = 'manual';
   cache.updatedAt = new Date().toISOString();
-  cache.sanaa = {
-    buy: parseNumbers(sanaa && sanaa.buy) || cache.sanaa.buy,
-    sell: parseNumbers(sanaa && sanaa.sell) || cache.sanaa.sell,
+
+  const apply = (code, pair) => {
+    for (const region of REGIONS) {
+      const r = pair && pair[region];
+      const buy = r ? parseNumbers(r.buy) : null;
+      const sell = r ? parseNumbers(r.sell) : null;
+      if (buy && sell) cache[region][code] = { buy, sell };
+    }
   };
-  cache.aden = {
-    buy: parseNumbers(aden && aden.buy) || cache.aden.buy,
-    sell: parseNumbers(aden && aden.sell) || cache.aden.sell,
-  };
+
+  if (legacyUsd) {
+    apply('usd', { sanaa: legacyUsd.sanaa, aden: legacyUsd.aden || cache.aden.usd });
+  } else {
+    for (const [code, pair] of Object.entries(map)) {
+      if (!CURRENCIES[code] || !pair) continue;
+      apply(code, pair);
+    }
+  }
   await persist(cache);
   return cache;
 }
@@ -173,4 +319,11 @@ function startSchedule() {
   refreshTimer.unref && refreshTimer.unref();
 }
 
-module.exports = { getRates, setManualRates, setAutoMode, refreshFromSource, startSchedule, DEFAULT_RATES };
+module.exports = {
+  getRates,
+  setManualRates,
+  setAutoMode,
+  refreshFromSource,
+  startSchedule,
+  DEFAULT_RATES: defaultRates(),
+};

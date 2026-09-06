@@ -802,17 +802,32 @@ app.put('/api/content/exchange', requireAdmin, async (req, res) => {
             return res.json({ success: true, data: rates });
         }
         const num = v => Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : NaN;
-        const sanaaBuy = num(body.sanaa && body.sanaa.buy);
-        const sanaaSell = num(body.sanaa && body.sanaa.sell);
-        const adenBuy = num(body.aden && body.aden.buy);
-        const adenSell = num(body.aden && body.aden.sell);
-        if (![sanaaBuy, sanaaSell, adenBuy, adenSell].every(Number.isFinite)) {
+        const currencies = body.currencies || {};
+        // Backward-compatible with the old USD-only shape {sanaa, aden}.
+        if (currencies.sanaa && typeof currencies.sanaa.buy === 'number') {
+            currencies.__legacyUsd = true;
+        }
+        let valid = currencies.__legacyUsd
+            ? [num(currencies.sanaa.buy), num(currencies.sanaa.sell), num(currencies.aden?.buy), num(currencies.aden?.sell)].every(Number.isFinite)
+            : (() => {
+                  let allOk = true;
+                  let any = false;
+                  for (const [code, pair] of Object.entries(currencies)) {
+                      if (!pair || typeof pair !== 'object') continue;
+                      for (const region of ['sanaa', 'aden']) {
+                          const r = pair[region];
+                          if (!r) continue;
+                          any = true;
+                          if (![num(r.buy), num(r.sell)].every(Number.isFinite)) { allOk = false; break; }
+                      }
+                      if (!allOk) break;
+                  }
+                  return allOk && any;
+              })();
+        if (!valid) {
             return res.status(400).json({ success: false, message: 'قيم غير صالحة' });
         }
-        const rates = await exchange.setManualRates({
-            sanaa: { buy: sanaaBuy, sell: sanaaSell },
-            aden: { buy: adenBuy, sell: adenSell },
-        });
+        const rates = await exchange.setManualRates({ currencies });
         res.json({ success: true, data: rates });
     } catch (err) {
         res.status(500).json({ success: false, message: 'خطأ في حفظ أسعار الصرف' });
