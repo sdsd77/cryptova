@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/fontawesome/all.min.css">
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css?v=2">
 </head>
 <body>
 
@@ -330,7 +330,7 @@
                 });
             });
 
-            // Live rates table
+            // Live rates table — flag + currency glyph + code + name, buy/sell in YER
             function renderRatesTable() {
                 var body = document.getElementById('calcRatesBody');
                 if (!body) return;
@@ -339,10 +339,18 @@
                 var yer = window.__cryptoYerRates || {};
                 var rr = (yer[region] && typeof yer[region] === 'object') ? yer[region] : (yer.sanaa || {});
                 var live = window.__cryptoLiveRates || {};
+                // [code, arabic name, flag, glyph, brand color]
                 var rows = [
-                    ['usd', 'دولار أمريكي'], ['sar', 'ريال سعودي'], ['aed', 'درهم إماراتي'],
-                    ['omr', 'ريال عماني'], ['kwd', 'دينار كويتي'], ['eur', 'يورو'],
-                    ['cny', 'يوان صيني'], ['try', 'ليرة تركية'], ['egp', 'جنيه مصري'], ['jod', 'دينار أردني'],
+                    ['usd', 'دولار أمريكي', '🇺🇸', '$', '#85bb65'],
+                    ['sar', 'ريال سعودي', '🇸🇦', 'ر.س', '#1e7a3a'],
+                    ['aed', 'درهم إماراتي', '🇦🇪', 'د.إ', '#2e9e6b'],
+                    ['omr', 'ريال عماني', '🇴🇲', 'ر.ع', '#c1272d'],
+                    ['kwd', 'دينار كويتي', '🇰🇼', 'د.ك', '#2f6fd0'],
+                    ['jod', 'دينار أردني', '🇯🇴', 'د.أ', '#1f4e79'],
+                    ['egp', 'جنيه مصري', '🇪🇬', 'ج.م', '#c9a227'],
+                    ['eur', 'يورو', '🇪🇺', '€', '#2d64bc'],
+                    ['try', 'ليرة تركية', '🇹🇷', '₺', '#d43b3b'],
+                    ['cny', 'يوان صيني', '🇨🇳', '¥', '#d8aa2a'],
                 ];
                 var fmt = function(n) {
                     if (!n) return '—';
@@ -350,18 +358,35 @@
                 };
                 var html = rows.map(function(r) {
                     var p = rr[r[0]] || {};
-                    return '<tr><td><span class="rate-name"><span class="rate-cc">' + r[0].toUpperCase() + '</span> ' + r[1] + '</span></td>' +
-                        '<td>' + fmt(p.buy) + '</td><td>' + fmt(p.sell) + '</td></tr>';
+                    return '<tr class="rate-row">' +
+                        '<td><span class="rate-card">' +
+                            '<span class="rate-flag">' + r[2] + '</span>' +
+                            '<span class="rate-sym" style="border-color:' + r[4] + '44;color:' + r[4] + ';background:' + r[4] + '14;">' + r[3] + '</span>' +
+                            '<span class="rate-info">' +
+                                '<span class="rate-code">' + r[0].toUpperCase() + '</span>' +
+                                '<span class="rate-cname">' + r[1] + '</span>' +
+                            '</span>' +
+                        '</span></td>' +
+                        '<td class="rate-val buy">' + fmt(p.buy) + ' <span class="rate-unit">ر.ي</span></td>' +
+                        '<td class="rate-val sell">' + fmt(p.sell) + ' <span class="rate-unit">ر.ي</span></td>' +
+                    '</tr>';
                 }).join('');
                 html += '<tr class="rate-divider"><td colspan="3"></td></tr>';
                 var cr = [
-                    ['BTC', live.BTC], ['ETH', live.ETH], ['USDT', 1],
+                    ['BTC', live.BTC, '₿', '#f7931a'],
+                    ['ETH', live.ETH, 'Ξ', '#627eea'],
+                    ['USDT', 1, '₮', '#26a17b'],
                 ];
                 cr.forEach(function(c) {
                     var v = c[1];
                     var price = v ? (v >= 1000 ? '$' + Math.round(v).toLocaleString('en-US') : '$' + Number(v).toFixed(2)) : '—';
-                    html += '<tr><td><span class="rate-name"><span class="rate-cc crypto">' + c[0] + '</span> سعر السوق العالمي</span></td>' +
-                        '<td colspan="2">' + price + '</td></tr>';
+                    html += '<tr class="rate-row"><td><span class="rate-card">' +
+                        '<span class="rate-sym" style="border-color:' + c[3] + '44;color:' + c[3] + ';background:' + c[3] + '14;">' + c[2] + '</span>' +
+                        '<span class="rate-info">' +
+                            '<span class="rate-code">' + c[0] + '</span>' +
+                            '<span class="rate-cname">سعر السوق العالمي</span>' +
+                        '</span>' +
+                    '</span></td><td class="rate-val market" colspan="2">' + price + '</td></tr>';
                 });
                 body.innerHTML = html;
             }
