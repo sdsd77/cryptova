@@ -8,8 +8,9 @@ const fs = require('fs');
 const { fetchAllFeeds, loadPosts, savePosts } = require('./rss-fetcher');
 const { BlogScheduler } = require('./scheduler');
 const { setupContentRoutes } = require('./content-api');
-const { initDB, seedFromFiles, dbModule } = require('./db');
+const { initDB, seedFromFiles, dbModule, isDBOk } = require('./db');
 const exchange = require('./exchange-rates');
+const analytics = require('./analytics');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -153,6 +154,12 @@ app.use((req, res, next) => {
 });
 
 // === Static Files: serve ONLY public directories (backend/node_modules never exposed) ===
+// === Visitor tracking: count HTML page views (excludes /api, assets, bots) ===
+app.use((req, res, next) => {
+    if (req.path !== SECRET_PATHS.admin && analytics.isPage(req)) analytics.trackVisit(req);
+    next();
+});
+
 // === Optional HTTP request logging (enabled with LOG_REQUESTS=1) — for debugging ===
 if (process.env.LOG_REQUESTS === '1') {
     app.use((req, res, next) => {
@@ -546,15 +553,98 @@ app.delete('/api/contacts/:index', requireAdmin, async (req, res) => {
 });
 
 app.get('/api/stats', requireAdmin, async (req, res) => {
-    const contacts = await loadContacts();
-    app.locals.contacts = contacts;
-    res.json({
-        success: true,
-        data: {
-            totalMessages: contacts.length,
-            unreadMessages: contacts.filter((c) => !c.read).length,
-        },
-    });
+    try {
+        const [contacts, posts, content] = await Promise.all([
+            loadContacts(),
+            loadPosts(),
+            dbModule.getContent(),
+        ]);
+        app.locals.contacts = contacts;
+
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const unread = contacts.filter((c) => !c.read);
+        const todayMsgs = contacts.filter((c) => new Date(c.date).getTime() >= todayStart);
+
+        const byCategory = {};
+        let autoCount = 0;
+        let manualCount = 0;
+        (posts || []).forEach((p) => {
+            const cat = p.category || 'غير مصنف';
+            byCategory[cat] = (byCategory[cat] || 0) + 1;
+            if (p.isManual) manualCount += 1;
+            else autoCount += 1;
+        });
+
+        const recent = (posts || [])
+            .slice()
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 4)
+            .map((p) => ({
+                title: p.title,
+                slug: p.slug,
+                category: p.category,
+                source: p.source,
+                date: p.date,
+                isManual: !!p.isManual,
+            }));
+
+        const rates = await exchange.getRates();
+        const cur = (fn) => fn || null;
+        res.json({
+            success: true,
+            data: {
+                messages: {
+                    total: contacts.length,
+                    unread: unread.length,
+                    today: todayMsgs.length,
+                },
+                posts: {
+                    total: (posts || []).length,
+                    auto: autoCount,
+                    manual: manualCount,
+                    byCategory,
+                    recent,
+                },
+                content: {
+                    services: (content && content.services) ? content.services.length : 0,
+                    cryptoRates: ((content && content.pricing && content.pricing.cryptoRates) || []).length,
+                    packages: ((content && content.pricing && content.pricing.packages) || []).length,
+                    faq: (content && content.faq) ? content.faq.length : 0,
+                },
+                exchange: {
+                    source: rates.source,
+                    updatedAt: rates.updatedAt,
+                    note: rates.note,
+                    sanaaUsd: cur(rates.sanaa && rates.sanaa.usd),
+                    adenUsd: cur(rates.aden && rates.aden.usd),
+                    sanaaSar: cur(rates.sanaa && rates.sanaa.sar),
+                    adenSar: cur(rates.aden && rates.aden.sar),
+                },
+                visitors: analytics.getStats(),
+                blog: (() => {
+                    const s = blogScheduler.getStatus();
+                    return {
+                        running: s.running,
+                        fetching: s.fetching,
+                        intervalHours: s.intervalHours,
+                        lastRun: s.lastRun,
+                        runCount: s.runCount,
+                        totalPostsAdded: s.totalPostsAdded,
+                    };
+                })(),
+                system: {
+                    uptimeSec: Math.floor(process.uptime()),
+                    storage: (await isDBOk()) ? 'PostgreSQL' : 'ملفات JSON',
+                    nodeVersion: process.version,
+                },
+                generatedAt: now.toISOString(),
+            },
+        });
+    } catch (err) {
+        console.error('Stats error:', err.message);
+        res.status(500).json({ success: false, message: 'خطأ في تحميل الإحصائيات' });
+    }
 });
 
 // === Content Management API (services / pricing / faq / images) ===
@@ -896,6 +986,9 @@ async function boot() {
 
         // Start YER exchange-rate watcher (re-checks every 30 min)
         exchange.startSchedule();
+
+        // Start visitor-analytics persistence (saves every 60s)
+        analytics.start();
 
         console.log(`\nPress Ctrl+C to stop\n`);
     });
