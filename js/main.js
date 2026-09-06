@@ -441,6 +441,15 @@
             return n.toLocaleString('en-US', { maximumFractionDigits: 8 });
         }
 
+        // Expose the calculation engine for the dedicated tool page (pages/calculator.html)
+        window.__cvCalc = {
+            getYerRatePair: getYerRatePair,
+            convertCurrency: convertCurrency,
+            formatCalcResult: formatCalcResult,
+            getCalculationRegion: getCalculationRegion,
+            CURRENCY_NAMES: CURRENCY_NAMES,
+        };
+
         // Loading shimmer while prices load
         if (cryptoPricesTable) {
             cryptoPricesTable.innerHTML = (

@@ -194,6 +194,7 @@ const SECRET_PATHS = {
     digital: '/svc-lI_e2m2Zgoqo',
     tech:    '/tech-Y-6Ob_UUKZ9g',
     pricing: '/price-uaLfoLjpibrD',
+    calc:    '/calc-cRYxT3jlWq5Z',
     blog:    '/blog-hBgYoFVGcYLJ',
     post:    '/post-Jy7vgl0_4QjK',
     faq:     '/faq-7puDJr3muiiJ',
@@ -203,6 +204,7 @@ const PAGE_FILES = {
     digital: 'crypto-services.html',
     tech:    'tech-services.html',
     pricing: 'pricing.html',
+    calc:    'calculator.html',
     blog:    'blog.html',
     faq:     'faq.html',
     contact: 'contact.html',
@@ -213,6 +215,7 @@ function servePage(file) {
 app.get(SECRET_PATHS.digital, servePage(PAGE_FILES.digital));
 app.get(SECRET_PATHS.tech, servePage(PAGE_FILES.tech));
 app.get(SECRET_PATHS.pricing, servePage(PAGE_FILES.pricing));
+app.get(SECRET_PATHS.calc, servePage(PAGE_FILES.calc));
 app.get(SECRET_PATHS.blog, servePage(PAGE_FILES.blog));
 app.get(SECRET_PATHS.faq, servePage(PAGE_FILES.faq));
 app.get(SECRET_PATHS.contact, servePage(PAGE_FILES.contact));

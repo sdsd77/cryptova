@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="حاسبة العملات - حوّل بين العملات الرقمية والعالمية والعربية حسب سعر الصرف في صنعاء وعدن">
+    <meta name="theme-color" content="#0a1628">
+    <title>حاسبة العملات | Cryptova</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/fontawesome/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+    <div class="loading-screen"><div class="loading-spinner"></div><div class="loading-text">Cryptova</div></div>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                <img src="../images/IMG-20260826-WA0004.jpg" alt="شعار Cryptova" class="logo-img">
+                <div class="brand-text">Crypto<span class="gold">va</span></div>
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="/" class="nav-link">الرئيسية</a></li>
+                <li><a href="/svc-lI_e2m2Zgoqo" class="nav-link">الخدمات الرقمية</a></li>
+                <li><a href="/tech-Y-6Ob_UUKZ9g" class="nav-link">الخدمات التقنية</a></li>
+                <li><a href="/calc-cRYxT3jlWq5Z" class="nav-link active">الحاسبة</a></li>
+                <li><a href="/price-uaLfoLjpibrD" class="nav-link">الأسعار</a></li>
+                <li><a href="/blog-hBgYoFVGcYLJ" class="nav-link">المدونة</a></li>
+                <li><a href="/faq-7puDJr3muiiJ" class="nav-link">الأسئلة الشائعة</a></li>
+                <li><a href="/contact-Rb1jI0TUQy-s" class="nav-link">تواصل معنا</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <a href="/contact-Rb1jI0TUQy-s" class="btn btn-gold btn-sm"><i class="fas fa-paper-plane"></i> ابدأ الآن</a>
+                <button class="mobile-toggle" aria-label="القائمة"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </nav>
+    <div class="nav-overlay"></div>
+
+    <section class="page-header">
+        <div class="page-header-bg">
+            <img src="../images/IMG-20260826-WA0008.jpg" alt="خلفية">
+        </div>
+        <div class="container">
+            <h1 data-aos="fade-up">حاسبة <span class="gold">العملات</span></h1>
+            <div class="breadcrumb" data-aos="fade-up" data-aos-delay="100">
+                <a href="/">الرئيسية</a><span class="separator">/</span><span>الحاسبة</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge"><i class="fas fa-calculator"></i> أداة التحويل</span>
+                <h2 class="section-title">حوّل بين <span class="gold">11 عملة</span> في ثوانٍ</h2>
+                <p class="section-subtitle">أسعار محدثة تلقائياً لصنعاء وعدن مع إمكانية التحويل بين العملات الرقمية والعربية والعالمية</p>
+            </div>
+
+            <div class="calc-workbench" data-aos="fade-up" data-aos-delay="100">
+
+                <!-- Conversion panel -->
+                <div class="calc-panel">
+                    <div class="calc-panel-head">
+                        <h3><i class="fas fa-right-left"></i> تحويل العملات</h3>
+                        <div class="region-switch" role="group" aria-label="سعر الصرف">
+                            <button type="button" class="region-btn active" data-region="sanaa">صنعاء والشمال</button>
+                            <button type="button" class="region-btn" data-region="aden">عدن والجنوب</button>
+                        </div>
+                    </div>
+
+                    <form id="cryptoCalcForm" novalidate>
+                        <div class="calc-amount-block">
+                            <label for="calcAmount">المبلغ</label>
+                            <div class="calc-amount-input">
+                                <input type="number" id="calcAmount" placeholder="0.00" min="0" step="any" required inputmode="decimal">
+                                <span class="amount-suffix" id="calcAmountSuffix">USDT</span>
+                            </div>
+                            <div class="quick-amounts">
+                                <button type="button" data-amt="100">100</button>
+                                <button type="button" data-amt="500">500</button>
+                                <button type="button" data-amt="1000">1,000</button>
+                                <button type="button" data-amt="5000">5,000</button>
+                                <button type="button" data-amt="10000">10,000</button>
+                            </div>
+                        </div>
+
+                        <div class="calc-lanes">
+                            <div class="form-group">
+                                <label for="calcFrom">أنا أرسل</label>
+                                <select id="calcFrom">
+                                    <optgroup label="عملات رقمية">
+                                        <option value="USDT">USDT</option>
+                                        <option value="BTC">Bitcoin (BTC)</option>
+                                        <option value="ETH">Ethereum (ETH)</option>
+                                    </optgroup>
+                                    <optgroup label="العملات العربية">
+                                        <option value="YER">ريال يمني</option>
+                                        <option value="SAR">ريال سعودي</option>
+                                        <option value="OMR">ريال عماني</option>
+                                        <option value="KWD">دينار كويتي</option>
+                                        <option value="AED">درهم إماراتي</option>
+                                    </optgroup>
+                                    <optgroup label="عملات عالمية">
+                                        <option value="USD">دولار أمريكي</option>
+                                        <option value="EUR">يورو</option>
+                                        <option value="TRY">ليرة تركية</option>
+                                        <option value="CNY">يوان صيني</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <button type="button" class="swap-btn" id="calcSwapBtn" title="عكس الوجهة" aria-label="عكس الوجهة"><i class="fas fa-right-left"></i></button>
+                            <div class="form-group">
+                                <label for="calcTo">أستلم</label>
+                                <select id="calcTo">
+                                    <optgroup label="العملات العربية">
+                                        <option value="YER">ريال يمني</option>
+                                        <option value="SAR">ريال سعودي</option>
+                                        <option value="OMR">ريال عماني</option>
+                                        <option value="KWD">دينار كويتي</option>
+                                        <option value="AED">درهم إماراتي</option>
+                                    </optgroup>
+                                    <optgroup label="عملات عالمية">
+                                        <option value="USD">دولار أمريكي</option>
+                                        <option value="EUR">يورو</option>
+                                        <option value="TRY">ليرة تركية</option>
+                                        <option value="CNY">يوان صيني</option>
+                                    </optgroup>
+                                    <optgroup label="عملات رقمية">
+                                        <option value="USDT">USDT</option>
+                                        <option value="BTC">Bitcoin (BTC)</option>
+                                        <option value="ETH">Ethereum (ETH)</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+
+                        <select id="calcRegion" style="display: none;">
+                            <option value="sanaa" selected>sanaa</option>
+                            <option value="aden">aden</option>
+                        </select>
+
+                        <div class="calc-rate-note" id="calcRateNote">جاري تحميل سعر الصرف...</div>
+
+                        <button type="submit" class="btn btn-gold calc-submit"><i class="fas fa-calculator"></i> احسب المبلغ</button>
+                    </form>
+
+                    <div class="calc-result calc-result-lg" id="calcResultBox">
+                        <div class="result-label">المبلغ المحول</div>
+                        <div class="result-value" id="calcResult">0.00</div>
+                        <div class="calc-unit-rate" id="calcUnitRate"></div>
+                    </div>
+                </div>
+
+                <!-- Live rates panel -->
+                <div class="calc-panel">
+                    <div class="calc-panel-head">
+                        <h3><i class="fas fa-chart-line"></i> أسعار السوق المباشرة</h3>
+                        <span class="rates-live-badge"><span class="dot"></span> مباشر</span>
+                    </div>
+
+                    <div class="rates-region-tabs" role="group" aria-label="المنطقة">
+                        <button type="button" class="region-tab active" data-region="sanaa">صنعاء</button>
+                        <button type="button" class="region-tab" data-region="aden">عدن</button>
+                    </div>
+
+                    <table class="calc-rates-table">
+                        <thead>
+                            <tr><th>العملة</th><th>شراء</th><th>بيع</th></tr>
+                        </thead>
+                        <tbody id="calcRatesBody">
+                            <tr><td colspan="3" style="color: var(--text-muted);">جاري تحميل الأسعار...</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p class="rates-footnote">
+                        <i class="fas fa-info-circle"></i>
+                        <strong style="color: var(--text-light);">شراء</strong> = السعر الذي تحصل عليه عند بيعك،
+                        <strong style="color: var(--text-light);">بيع</strong> = السعر الذي تدفعه عند شرائك.
+                        تُحدَّث الأسعار تلقائياً كل 30 دقيقة حسب السوق في كل منطقة.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box" data-aos="zoom-in">
+                <h2 class="section-title">هل تريد <span class="gold">تنفيذ عملية</span> تداول؟</h2>
+                <p class="section-subtitle">تواصل معنا الآن ونوفر لك أفضل سعر وتكلفة تنفيذ</p>
+                <a href="/contact-Rb1jI0TUQy-s" class="btn btn-gold btn-lg"><i class="fas fa-paper-plane"></i> تواصل معنا</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <img src="../images/IMG-20260826-WA0004.jpg" alt="شعار Cryptova" class="brand-logo">
+                    <span class="brand-text">Crypto<span style="color: var(--accent-gold);">va</span></span>
+                    <p>نقدم لك حلولاً متكاملة في عالم العملات الرقمية والتقنية.</p>
+                    <div class="footer-social">
+                        <a href="https://facebook.com/Cryptova_ye" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://x.com/Cryptova_ye" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com/cryptova.ye" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                        <a href="https://t.me/Cryptova_ye" target="_blank" rel="noopener" aria-label="تيليجرام"><i class="fab fa-telegram-plane"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="/">الرئيسية</a></li>
+                        <li><a href="/calc-cRYxT3jlWq5Z">الحاسبة</a></li>
+                        <li><a href="/price-uaLfoLjpibrD">الأسعار</a></li>
+                        <li><a href="/contact-Rb1jI0TUQy-s">تواصل معنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>تواصل معنا</h4>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i><span>صنعاء، اليمن</span></li>
+                        <li><i class="fas fa-phone"></i><span dir="ltr">+967 785 628 409</span></li>
+                        <li><i class="fas fa-envelope"></i><span>cryptovaye@gmail.com</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Cryptova. جميع الحقوق محفوظة.</span>
+                <span>صُنع بـ <i class="fas fa-heart" style="color: var(--accent-gold);"></i> في اليمن</span>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/967785628409" target="_blank" class="whatsapp-float"><i class="fab fa-whatsapp"></i></a>
+    <button class="scroll-top"><i class="fas fa-chevron-up"></i></button>
+
+    <script src="../js/main.js?v=5"></script>
+    <script>
+        (function() {
+            var form = document.getElementById('cryptoCalcForm');
+            var calcApi = window.__cvCalc;
+
+            function runCalc() {
+                if (form) form.requestSubmit();
+            }
+
+            function flashResult() {
+                var box = document.getElementById('calcResultBox');
+                if (!box) return;
+                box.classList.remove('flash');
+                void box.offsetWidth;
+                box.classList.add('flash');
+            }
+
+            var resultBox = document.getElementById('calcResultBox');
+            if (resultBox) resultBox.addEventListener('animationend', function() {
+                resultBox.classList.remove('flash');
+            });
+
+            // Amount currency suffix follows the "from" currency
+            function updateSuffix() {
+                var f = document.getElementById('calcFrom');
+                var sfx = document.getElementById('calcAmountSuffix');
+                if (f && sfx) sfx.textContent = f.value;
+            }
+
+            // Swap from/to
+            var swapBtn = document.getElementById('calcSwapBtn');
+            if (swapBtn) swapBtn.addEventListener('click', function() {
+                var f = document.getElementById('calcFrom');
+                var t = document.getElementById('calcTo');
+                var tmp = f.value;
+                f.value = t.value;
+                t.value = tmp;
+                updateSuffix();
+                runCalc();
+            });
+
+            // Quick amounts
+            var amountInput = document.getElementById('calcAmount');
+            document.querySelectorAll('.quick-amounts button').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    if (amountInput) amountInput.value = btn.getAttribute('data-amt').replace(/,/g, '');
+                    runCalc();
+                });
+            });
+
+            // Unit-rate line (1 USD = ...) shown under the result
+            function updateUnitRate() {
+                var el = document.getElementById('calcUnitRate');
+                if (!el || !calcApi) return;
+                var from = document.getElementById('calcFrom').value;
+                var to = document.getElementById('calcTo').value;
+                if (from === to) { el.textContent = ''; return; }
+                var a = calcApi.getYerRatePair(from);
+                var b = calcApi.getYerRatePair(to);
+                if (!a || !b) return;
+                var per = a.buy / b.sell;
+                var name = calcApi.CURRENCY_NAMES[to] || to;
+                el.textContent = '1 ' + from + ' = ' + per.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + name;
+            }
+
+            document.getElementById('calcFrom').addEventListener('change', updateSuffix);
+
+            // Region switching (buttons + rates tabs) drives the hidden select
+            function setRegion(region) {
+                var sel = document.getElementById('calcRegion');
+                if (sel) sel.value = region;
+                document.querySelectorAll('[data-region]').forEach(function(el) {
+                    el.classList.toggle('active', el.getAttribute('data-region') === region);
+                });
+                if (sel) sel.dispatchEvent(new Event('change'));
+                renderRatesTable();
+                runCalc();
+            }
+
+            document.querySelectorAll('[data-region]').forEach(function(el) {
+                el.addEventListener('click', function() {
+                    setRegion(el.getAttribute('data-region'));
+                });
+            });
+
+            // Live rates table
+            function renderRatesTable() {
+                var body = document.getElementById('calcRatesBody');
+                if (!body) return;
+                var sel = document.getElementById('calcRegion');
+                var region = sel ? sel.value : 'sanaa';
+                var yer = window.__cryptoYerRates || {};
+                var rr = (yer[region] && typeof yer[region] === 'object') ? yer[region] : (yer.sanaa || {});
+                var live = window.__cryptoLiveRates || {};
+                var rows = [
+                    ['usd', 'دولار أمريكي'], ['sar', 'ريال سعودي'], ['aed', 'درهم إماراتي'],
+                    ['omr', 'ريال عماني'], ['kwd', 'دينار كويتي'], ['eur', 'يورو'],
+                    ['cny', 'يوان صيني'], ['try', 'ليرة تركية'],
+                ];
+                var fmt = function(n) {
+                    if (!n) return '—';
+                    return Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 });
+                };
+                var html = rows.map(function(r) {
+                    var p = rr[r[0]] || {};
+                    return '<tr><td><span class="rate-name"><span class="rate-cc">' + r[0].toUpperCase() + '</span> ' + r[1] + '</span></td>' +
+                        '<td>' + fmt(p.buy) + '</td><td>' + fmt(p.sell) + '</td></tr>';
+                }).join('');
+                html += '<tr class="rate-divider"><td colspan="3"></td></tr>';
+                var cr = [
+                    ['BTC', live.BTC], ['ETH', live.ETH], ['USDT', 1],
+                ];
+                cr.forEach(function(c) {
+                    var v = c[1];
+                    var price = v ? (v >= 1000 ? '$' + Math.round(v).toLocaleString('en-US') : '$' + Number(v).toFixed(2)) : '—';
+                    html += '<tr><td><span class="rate-name"><span class="rate-cc crypto">' + c[0] + '</span> سعر السوق العالمي</span></td>' +
+                        '<td colspan="2">' + price + '</td></tr>';
+                });
+                body.innerHTML = html;
+            }
+
+            // Update rate table when live prices arrive (main.js replaces __cryptoYerRates)
+            setInterval(function() {
+                renderRatesTable();
+            }, 2000);
+
+            // Keep the unit rate fresh on every calculation
+            form.addEventListener('submit', function() {
+                setTimeout(updateUnitRate, 0);
+            });
+
+            updateSuffix();
+            renderRatesTable();
+        })();
+    </script>
+</body>
+</html>
