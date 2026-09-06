@@ -9,6 +9,7 @@ const { fetchAllFeeds, loadPosts, savePosts } = require('./rss-fetcher');
 const { BlogScheduler } = require('./scheduler');
 const { setupContentRoutes } = require('./content-api');
 const { initDB, seedFromFiles, dbModule } = require('./db');
+const exchange = require('./exchange-rates');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -761,24 +762,60 @@ async function fetchBinancePrices() {
 
 app.get('/api/crypto-prices', async (req, res) => {
     if (cryptoPriceCache.data && Date.now() - cryptoPriceCache.fetchedAt < CRYPTO_CACHE_TTL) {
-        return res.json({ ...cryptoPriceCache.data, cached: true });
+        return res.json({ ...cryptoPriceCache.data, cached: true, yer: await exchange.getRates() });
     }
     try {
         cryptoPriceCache.data = await fetchCoinGeckoPrices();
         cryptoPriceCache.fetchedAt = Date.now();
-        res.json({ ...cryptoPriceCache.data, cached: false });
+        res.json({ ...cryptoPriceCache.data, cached: false, yer: await exchange.getRates() });
     } catch (error) {
         try {
             cryptoPriceCache.data = await fetchBinancePrices();
             cryptoPriceCache.fetchedAt = Date.now();
-            res.json({ ...cryptoPriceCache.data, cached: false });
+            res.json({ ...cryptoPriceCache.data, cached: false, yer: await exchange.getRates() });
         } catch (binanceError) {
             if (cryptoPriceCache.data) {
-                res.json({ ...cryptoPriceCache.data, cached: true, stale: true });
+                res.json({ ...cryptoPriceCache.data, cached: true, stale: true, yer: await exchange.getRates() });
             } else {
                 res.status(502).json({ error: 'Failed to fetch crypto prices' });
             }
         }
+    }
+});
+
+// === YER Exchange Rates (auto-fetch with manual admin override) ===
+app.get('/api/exchange-rates', async (req, res) => {
+    try {
+        const rates = await exchange.getRates({ force: req.query.force === '1' });
+        res.json({ success: true, data: rates });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'خطأ في أسعار الصرف' });
+    }
+});
+
+app.put('/api/content/exchange', requireAdmin, async (req, res) => {
+    try {
+        const body = req.body || {};
+        if (body.mode === 'auto') {
+            await exchange.setAutoMode();
+            const rates = await exchange.refreshFromSource();
+            return res.json({ success: true, data: rates });
+        }
+        const num = v => Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : NaN;
+        const sanaaBuy = num(body.sanaa && body.sanaa.buy);
+        const sanaaSell = num(body.sanaa && body.sanaa.sell);
+        const adenBuy = num(body.aden && body.aden.buy);
+        const adenSell = num(body.aden && body.aden.sell);
+        if (![sanaaBuy, sanaaSell, adenBuy, adenSell].every(Number.isFinite)) {
+            return res.status(400).json({ success: false, message: 'قيم غير صالحة' });
+        }
+        const rates = await exchange.setManualRates({
+            sanaa: { buy: sanaaBuy, sell: sanaaSell },
+            aden: { buy: adenBuy, sell: adenSell },
+        });
+        res.json({ success: true, data: rates });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'خطأ في حفظ أسعار الصرف' });
     }
 });
 
@@ -838,6 +875,9 @@ async function boot() {
         if (process.env.BLOG_SCHEDULER !== '0') {
             blogScheduler.start();
         }
+
+        // Start YER exchange-rate watcher (re-checks every 30 min)
+        exchange.startSchedule();
 
         console.log(`\nPress Ctrl+C to stop\n`);
     });

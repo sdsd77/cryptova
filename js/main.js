@@ -339,6 +339,8 @@
                 var amount = parseFloat(document.getElementById('calcAmount').value);
                 var fromCurrency = document.getElementById('calcFrom').value;
                 var toCurrency = document.getElementById('calcTo').value;
+                var regionEl = document.getElementById('calcRegion');
+                var region = regionEl ? regionEl.value : 'sanaa';
 
                 if (isNaN(amount) || amount <= 0) {
                     showToast('الرجاء إدخال مبلغ صحيح');
@@ -346,16 +348,23 @@
                 }
 
                 var live = window.__cryptoLiveRates || {};
+                var yer = window.__cryptoYerRates || {};
                 var btcUsd = live.BTC || 66000;
                 var ethUsd = live.ETH || 3300;
-                var yerUsd = 530;
+
+                var regionRates = /* @__PURE__ */(function() {
+                    var r = (region === 'aden') ? yer.aden : yer.sanaa;
+                    if (r && r.buy && r.sell) return r;
+                    var fallback = (region === 'aden') ? { buy: 1554, sell: 1562 } : { buy: 533, sell: 536 };
+                    return fallback;
+                })();
 
                 var rates = {
-                    'USDT': { 'YER': yerUsd, 'USD': 1, 'BTC': 1 / btcUsd, 'ETH': 1 / ethUsd },
-                    'BTC': { 'YER': btcUsd * yerUsd, 'USD': btcUsd, 'USDT': btcUsd, 'ETH': btcUsd / ethUsd },
-                    'ETH': { 'YER': ethUsd * yerUsd, 'USD': ethUsd, 'USDT': ethUsd, 'BTC': ethUsd / btcUsd },
-                    'YER': { 'USDT': 1 / yerUsd, 'USD': 1 / yerUsd, 'BTC': 1 / (btcUsd * yerUsd), 'ETH': 1 / (ethUsd * yerUsd) },
-                    'USD': { 'YER': yerUsd, 'USDT': 1, 'BTC': 1 / btcUsd, 'ETH': 1 / ethUsd }
+                    'USDT': { 'YER': regionRates.buy, 'USD': 1, 'BTC': 1 / btcUsd, 'ETH': 1 / ethUsd },
+                    'BTC': { 'YER': btcUsd * regionRates.buy, 'USD': btcUsd, 'USDT': btcUsd, 'ETH': btcUsd / ethUsd },
+                    'ETH': { 'YER': ethUsd * regionRates.buy, 'USD': ethUsd, 'USDT': ethUsd, 'BTC': ethUsd / btcUsd },
+                    'YER': { 'USDT': 1 / regionRates.sell, 'USD': 1 / regionRates.sell, 'BTC': 1 / (btcUsd * regionRates.sell), 'ETH': 1 / (ethUsd * regionRates.sell) },
+                    'USD': { 'YER': regionRates.buy, 'USDT': 1, 'BTC': 1 / btcUsd, 'ETH': 1 / ethUsd }
                 };
 
                 var result = 0;
@@ -367,6 +376,8 @@
                 if (resultEl) {
                     resultEl.textContent = result.toFixed(toCurrency === 'BTC' ? 8 : 2) + ' ' + toCurrency;
                 }
+
+                updateCalcRateNote();
             });
         }
 
@@ -388,6 +399,12 @@
 
         // Expose live rates for the crypto calculator (works on all pages)
         window.__cryptoLiveRates = {};
+
+        // Fallback YER rates until the server proxy responds (region-aware calculator)
+        window.__cryptoYerRates = {
+            sanaa: { buy: 533, sell: 536 },
+            aden: { buy: 1554, sell: 1562 },
+        };
 
         // Loading shimmer while prices load
         if (cryptoPricesTable) {
@@ -463,6 +480,34 @@
             var btc = livePrices['BTC'] || 66000;
             var eth = livePrices['ETH'] || 3300;
             window.__cryptoLiveRates = { BTC: btc, ETH: eth, USDT: 1 };
+        }
+
+        function applyYerRates(yer) {
+            if (!yer) return;
+            var meta = {
+                __live: true,
+                __manual: yer.source === 'manual',
+            };
+            window.__cryptoYerRates = Object.assign(meta,
+                (yer.sanaa ? { sanaa: yer.sanaa } : {}),
+                (yer.aden ? { aden: yer.aden } : {})
+            );
+        }
+
+        function updateCalcRateNote() {
+            var note = document.getElementById('calcRateNote');
+            if (!note) return;
+            var regionEl = document.getElementById('calcRegion');
+            var region = regionEl ? regionEl.value : 'sanaa';
+            var yer = window.__cryptoYerRates || {};
+            var r = (region === 'aden') ? yer.aden : yer.sanaa;
+            if (r && r.buy && r.sell) {
+                var label = (region === 'aden') ? 'عدن والمحافظات الجنوبية' : 'صنعاء والمحافظات الشمالية';
+                var tag = yer.__manual ? ' — تعديل يدوي' : (yer.__live ? ' — سعر السوق' : ' — سعر تقريبي');
+                note.textContent = label + ' · شراء ' + r.buy + ' · بيع ' + r.sell + tag;
+            } else {
+                note.textContent = 'جاري تحميل سعر الصرف...';
+            }
         }
 
         // Data shape: { id: { usd, usd_24h_change } } (CoinGecko or server-normalized)
@@ -558,6 +603,7 @@
                 return res.json();
             }).then(function(data) {
                 if (!data || !data.prices) throw new Error('Proxy no data');
+                applyYerRates(data.yer);
                 return data.prices;
             });
         }
@@ -590,6 +636,13 @@
 
         refreshPrices();
         setInterval(refreshPrices, 30000);
+
+        // Update the live rate note when the user switches region
+        var calcRegionEl = document.getElementById('calcRegion');
+        if (calcRegionEl) {
+            calcRegionEl.addEventListener('change', updateCalcRateNote);
+        }
+        updateCalcRateNote();
 
         // === Swiper Testimonials ===
         if (typeof Swiper !== 'undefined') {

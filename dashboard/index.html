@@ -535,6 +535,7 @@
                 <div class="cmp-tabs">
                     <button class="cmp-tab active" onclick="setPriceTab('rates')"><i class="fas fa-coins"></i> أسعار العملات الرقمية</button>
                     <button class="cmp-tab" onclick="setPriceTab('packages')"><i class="fas fa-cubes"></i> باقات البرمجة</button>
+                    <button class="cmp-tab" onclick="setPriceTab('exchange')"><i class="fas fa-money-bill-wave"></i> سعر الصرف (ريال)</button>
                 </div>
 
                 <div id="price-panel-rates" class="panel">
@@ -555,6 +556,41 @@
                     <div class="cmp-note">عدّل ثم اضغط "حفظ الباقات".</div>
                     <div id="packagesEditor"></div>
                     <button class="btn btn-gold" onclick="savePackages()" style="margin-top: 10px;"><i class="fas fa-save"></i> حفظ الباقات</button>
+                </div>
+
+                <div id="price-panel-exchange" class="panel" style="display: none;">
+                    <div class="cmp-toolbar">
+                        <h2 style="font-size: 1.1rem; font-weight: 700;"><i class="fas fa-money-bill-wave" style="color: var(--accent-gold);"></i> سعر صرف الريال</h2>
+                        <button class="btn btn-outline btn-sm" onclick="exchangeForceRefresh()"><i class="fas fa-sync-alt"></i> جلب تلقائي الآن</button>
+                    </div>
+                    <div class="cmp-note">سعر الدولار مقابل الريال اليمني. يُجلب تلقائياً كل 30 دقيقة. عند التعديل اليدوي يتوقف الجلب التلقائي حتى تعيد تفعيله.</div>
+
+                    <div id="exchangeStatus" style="font-size: 0.9rem; margin-bottom: 16px; color: var(--text-muted);"></div>
+
+                    <div class="cmp-form-grid" style="grid-template-columns: repeat(4, 1fr);">
+                        <div>
+                            <label class="cmp-label">صنعاء · شراء</label>
+                            <input class="cmp-input" type="number" id="exSanaaBuy" min="1" step="1">
+                        </div>
+                        <div>
+                            <label class="cmp-label">صنعاء · بيع</label>
+                            <input class="cmp-input" type="number" id="exSanaaSell" min="1" step="1">
+                        </div>
+                        <div>
+                            <label class="cmp-label">عدن · شراء</label>
+                            <input class="cmp-input" type="number" id="exAdenBuy" min="1" step="1">
+                        </div>
+                        <div>
+                            <label class="cmp-label">عدن · بيع</label>
+                            <input class="cmp-input" type="number" id="exAdenSell" min="1" step="1">
+                        </div>
+                    </div>
+
+                    <div class="cmp-toolbar" style="margin: 0; margin-top: 16px;">
+                        <button class="btn btn-gold" onclick="saveExchange()"><i class="fas fa-save"></i> حفظ (بشكل يدوي)</button>
+                        <button class="btn btn-outline" onclick="setExchangeAuto()" style="margin-right: 8px;"><i class="fas fa-undo"></i> إرجاع الجلب التلقائي</button>
+                    </div>
+                    <div id="exchangeMessage" style="min-height: 24px; margin-top: 12px; font-size: 0.9rem;"></div>
                 </div>
             </div>
 
@@ -1210,10 +1246,13 @@
         function setPriceTab(tab) {
             document.getElementById('price-panel-rates').style.display = tab === 'rates' ? 'block' : 'none';
             document.getElementById('price-panel-packages').style.display = tab === 'packages' ? 'block' : 'none';
+            document.getElementById('price-panel-exchange').style.display = tab === 'exchange' ? 'block' : 'none';
             var tabs = document.querySelectorAll('#section-pricing .cmp-tab');
             tabs.forEach(function(t) { t.classList.remove('active'); });
-            if (tab === 'rates') tabs[0].classList.add('active');
-            else tabs[1].classList.add('active');
+            var map = { rates: 0, packages: 1, exchange: 2 };
+            var idx = map[tab];
+            if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('active');
+            if (tab === 'exchange') loadExchange();
         }
 
         async function loadRates() {
@@ -1267,6 +1306,80 @@
                 alert('تم حفظ الأسعار');
                 loadRates();
             } catch (e) { if (e.message !== 'unauthorized') alert('فشل الحفظ'); }
+        }
+
+        // ---------- EXCHANGE RATES ----------
+        function exStatusHtml(data, note) {
+            var src = data.source === 'manual' ? ' (تعديل يدوي — الجلب التلقائي متوقف)' : ' (جلب تلقائي)';
+            var when = data.updatedAt ? ' آخر تحديث: ' + new Date(data.updatedAt).toLocaleString('ar-SA') : '';
+            return note + src + when;
+        }
+
+        function exFill(data) {
+            document.getElementById('exSanaaBuy').value = data.sanaa.buy;
+            document.getElementById('exSanaaSell').value = data.sanaa.sell;
+            document.getElementById('exAdenBuy').value = data.aden.buy;
+            document.getElementById('exAdenSell').value = data.aden.sell;
+            document.getElementById('exchangeStatus').textContent = exStatusHtml(data, 'الوضع الحالي:');
+            document.getElementById('exchangeMessage').textContent = '';
+        }
+
+        async function loadExchange() {
+            var box = document.getElementById('exchangeStatus');
+            box.textContent = 'جاري تحميل سعر الصرف...';
+            try {
+                var resp = await fetch('/api/exchange-rates', { headers: { Accept: 'application/json' } });
+                var data = await resp.json();
+                if (data.success && data.data) exFill(data.data);
+                else box.textContent = 'تعذر تحميل سعر الصرف';
+            } catch (e) { console.log(e); box.textContent = 'تعذر تحميل سعر الصرف'; }
+        }
+
+        async function saveExchange() {
+            var sanaaBuy = parseFloat(document.getElementById('exSanaaBuy').value);
+            var sanaaSell = parseFloat(document.getElementById('exSanaaSell').value);
+            var adenBuy = parseFloat(document.getElementById('exAdenBuy').value);
+            var adenSell = parseFloat(document.getElementById('exAdenSell').value);
+            if (!sanaaBuy || !sanaaSell || !adenBuy || !adenSell || sanaaBuy < 1 || sanaaSell < 1 || adenBuy < 1 || adenSell < 1) {
+                document.getElementById('exchangeMessage').textContent = '⚠️ أدخل قيماً صحيحة أكبر من 0';
+                return;
+            }
+            try {
+                await fetch('/api/content/exchange', {
+                    method: 'PUT',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+                    body: JSON.stringify({ sanaa: { buy: sanaaBuy, sell: sanaaSell }, aden: { buy: adenBuy, sell: adenSell } }),
+                }).then(handleApiResponse);
+                document.getElementById('exchangeMessage').textContent = '✔️ تم الحفظ يدوياً';
+                loadExchange();
+            } catch (e) { if (e.message !== 'unauthorized') { document.getElementById('exchangeMessage').textContent = 'فشل الحفظ'; } }
+        }
+
+        async function exchangeForceRefresh() {
+            document.getElementById('exchangeStatus').textContent = 'جاري الجلب من السوق...';
+            try {
+                await fetch('/api/content/exchange', {
+                    method: 'PUT',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+                    body: JSON.stringify({ mode: 'auto' }),
+                }).then(handleApiResponse);
+                var resp = await fetch('/api/exchange-rates?force=1', { headers: { Accept: 'application/json' } });
+                var data = await resp.json();
+                if (data.success && data.data) exFill(data.data);
+                else document.getElementById('exchangeStatus').textContent = 'تعذر الجلب';
+            } catch (e) { console.log(e); document.getElementById('exchangeStatus').textContent = 'تعذر الجلب'; }
+        }
+
+        async function setExchangeAuto() {
+            try {
+                await fetch('/api/content/exchange', {
+                    method: 'PUT',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+                    body: JSON.stringify({ mode: 'auto' }),
+                }).then(handleApiResponse);
+                document.getElementById('exchangeMessage').textContent = '✔️ عاد الجلب التلقائي';
+                loadExchange();
+            } catch (e) { if (e.message !== 'unauthorized') { document.getElementById('exchangeMessage').textContent = 'فشل الإرجاع'; } }
         }
 
         async function loadPackages() {
