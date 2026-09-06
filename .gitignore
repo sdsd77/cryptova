@@ -1,0 +1,17 @@
+# ─── Sensitive / runtime data (REPLACE on server, never commit) ───
+backend/.env
+backend/data/admin.json
+backend/data/contacts.json
+
+# ─── Dependencies ───
+node_modules/
+backend/node_modules/
+
+# ─── OS / editor noise ───
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+
+# ─── Render runtime (data files recreate automatically) ───
+# content.json and posts.json ARE committed intentionally to seed content.

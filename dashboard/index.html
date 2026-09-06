@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | Cryptova</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/fontawesome/all.min.css?v=2">
+    <link rel="stylesheet" href="../css/styles.css?v=2">
+    <style>
+        body { direction: rtl; }
+
+        .dashboard { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 260px;
+            background: var(--primary-dark);
+            border-left: 1px solid var(--border-color);
+            padding: 30px 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .sidebar-brand .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-gold);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+        }
+
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin-bottom: 4px; }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(212, 168, 67, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .sidebar-menu a i { width: 20px; text-align: center; }
+
+        .main-content {
+            flex: 1;
+            margin-right: 260px;
+            padding: 30px;
+            background: var(--bg-dark);
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .top-bar h1 { font-size: 1.5rem; font-weight: 800; }
+
+        .top-bar-actions { display: flex; gap: 12px; align-items: center; }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover { border-color: var(--border-gold); }
+
+        .stat-card .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+        }
+
+        .stat-card .stat-icon.gold { background: rgba(212, 168, 67, 0.15); color: var(--accent-gold); }
+        .stat-card .stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .stat-card .stat-icon.green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .stat-card .stat-icon.red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .panel-header h2 { font-size: 1.2rem; font-weight: 700; }
+
+        .messages-list { display: flex; flex-direction: column; gap: 16px; }
+
+        .message-item {
+            background: rgba(10, 22, 40, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .message-item.unread { border-right: 3px solid var(--accent-gold); }
+        .message-item:hover { border-color: var(--border-gold); }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .message-header h4 { font-size: 1rem; font-weight: 700; }
+
+        .message-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .message-body {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-gold { background: rgba(212, 168, 67, 0.15); color: var(--accent-gold); }
+        .badge-green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; color: var(--accent-gold); opacity: 0.5; }
+        .empty-state p { font-size: 1rem; }
+
+        .hidden { display: none !important; }
+
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+            background: var(--gradient-dark);
+        }
+
+        .login-card {
+            background: var(--primary-medium);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-card .logo-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            background: var(--gradient-gold);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-size: 1.7rem;
+            box-shadow: 0 10px 30px rgba(212, 168, 67, 0.35);
+        }
+
+        .login-card h2 { margin-bottom: 6px; color: var(--accent-gold); font-size: 1.35rem; }
+        .login-card .login-subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px; }
+
+        .login-field {
+            text-align: right;
+            margin-bottom: 14px;
+        }
+
+        .login-field label {
+            display: block;
+            text-align: right;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0 4px 6px;
+        }
+
+        .login-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .login-input-wrap i {
+            position: absolute;
+            right: 14px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            pointer-events: none;
+        }
+
+        .login-input-wrap input {
+            width: 100%;
+            padding: 12px 40px 12px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-size: 1rem;
+            direction: ltr;
+            transition: border-color var(--transition);
+        }
+
+        .login-input-wrap input:focus { outline: none; border-color: var(--accent-gold); box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15); }
+
+        .login-btn {
+            width: 100%;
+            margin-top: 6px;
+            padding: 13px;
+            font-size: 1rem;
+        }
+
+        #loginError {
+            color: #ef4444;
+            min-height: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: none;
+        }
+
+        #loginError.show { display: block; }
+
+        /* === Content Management UI === */
+        .cmp-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+        .cmp-tab {
+            padding: 10px 20px; border-radius: 10px; cursor: pointer;
+            border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-muted);
+            font-weight: 600; font-size: 0.9rem; transition: var(--transition);
+        }
+        .cmp-tab:hover { border-color: var(--border-gold); color: var(--accent-gold); }
+        .cmp-tab.active { background: var(--gradient-gold); color: var(--primary-dark); border-color: transparent; }
+
+        .cmp-list { display: flex; flex-direction: column; gap: 14px; }
+        .cmp-item {
+            background: rgba(10,22,40,0.5); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;
+            display: flex; align-items: center; gap: 16px; transition: var(--transition);
+        }
+        .cmp-item:hover { border-color: var(--border-gold); }
+        .cmp-item .cmp-thumb { width: 70px; height: 52px; border-radius: 8px; object-fit: cover; background: var(--border-color); flex-shrink: 0; }
+        .cmp-item .cmp-main { flex: 1; min-width: 0; }
+        .cmp-item .cmp-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+        .cmp-item .cmp-meta { color: var(--text-muted); font-size: 0.8rem; }
+        .cmp-item .cmp-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .cmp-badge { display: inline-block; padding: 2px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; margin-right: 8px; }
+        .cmp-badge.on { background: rgba(16,185,129,0.15); color: #10b981; }
+        .cmp-badge.off { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+        .cmp-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .cmp-form-grid .full { grid-column: 1 / -1; }
+        .cmp-label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        .cmp-input, .cmp-textarea {
+            width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-color);
+            background: var(--bg-dark); color: var(--text-light); font-size: 0.9rem; font-family: inherit; margin-bottom: 14px;
+        }
+        .cmp-input:focus, .cmp-textarea:focus { outline: none; border-color: var(--accent-gold); }
+        .cmp-textarea { min-height: 90px; resize: vertical; }
+        .cmp-feature-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .cmp-feature-row input { flex: 1; }
+
+        .cmp-imgpicker { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+        .cmp-imgpicker .preview { width: 90px; height: 64px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); background: var(--border-color); }
+        .cmp-imgpicker input { flex: 1; min-width: 200px; }
+
+        .cmp-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .cmp-modal.open { display: flex; }
+        .cmp-modal-box { background: var(--primary-medium); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; }
+        .cmp-modal-box h3 { margin-bottom: 16px; }
+        .cmp-img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin: 16px 0; }
+        .cmp-img-opt { border: 2px solid var(--border-color); border-radius: 10px; overflow: hidden; cursor: pointer; transition: var(--transition); text-align: center; }
+        .cmp-img-opt img { width: 100%; height: 80px; object-fit: cover; display: block; }
+        .cmp-img-opt:hover { border-color: var(--accent-gold); }
+        .cmp-img-opt.selected { border-color: var(--accent-gold); box-shadow: 0 0 0 2px rgba(212,168,67,0.3); }
+
+        .cmp-note { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 14px; }
+        .cmp-loading { text-align: center; padding: 40px; color: var(--text-muted); }
+
+        .cmp-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-right: 0; }
+            .stats-cards { grid-template-columns: 1fr 1fr; }
+            .cmp-form-grid { grid-template-columns: 1fr; }
+            .cmp-item { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="logo-icon"><i class="fas fa-lock"></i></div>
+            <h2>لوحة التحكم</h2>
+            <p class="login-subtitle">أدخل بيانات الدخول للوصول إلى لوحة التحكم</p>
+            <form id="loginForm" onsubmit="doLogin(); return false;" autocomplete="off">
+                <div class="login-field">
+                    <label for="loginUsername">اسم المستخدم</label>
+                    <div class="login-input-wrap">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="loginUsername" name="loginUsername" placeholder="اسم المستخدم" autocomplete="off" autocapitalize="off" spellcheck="false" autofocus>
+                    </div>
+                </div>
+                <div class="login-field">
+                    <label for="loginPassword">كلمة المرور</label>
+                    <div class="login-input-wrap">
+                        <i class="fas fa-key"></i>
+                        <input type="password" id="loginPassword" name="loginPassword" placeholder="كلمة المرور" autocomplete="new-password">
+                    </div>
+                </div>
+                <div id="loginError"></div>
+                <button type="submit" class="btn btn-gold btn-lg login-btn"><i class="fas fa-sign-in-alt"></i> دخول</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="dashboard hidden" id="appShell">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo-icon"><i class="fas fa-coins"></i></div>
+                <span>اسم <span style="color: var(--accent-gold);">مشروعك</span></span>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="#overview" class="active" onclick="showSection('overview')"><i class="fas fa-tachometer-alt"></i> نظرة عامة</a></li>
+                <li><a href="#messages" onclick="showSection('messages')"><i class="fas fa-envelope"></i> الرسائل</a></li>
+                <li><a href="#services" onclick="showSection('services')"><i class="fas fa-boxes"></i> الخدمات</a></li>
+                <li><a href="#pricing" onclick="showSection('pricing')"><i class="fas fa-tags"></i> الأسعار</a></li>
+                <li><a href="#faq" onclick="showSection('faq')"><i class="fas fa-question-circle"></i> الأسئلة الشائعة</a></li>
+                <li><a href="#settings" onclick="showSection('settings')"><i class="fas fa-user-cog"></i> الإعدادات</a></li>
+                <li><a href="../index.html"><i class="fas fa-globe"></i> زيارة الموقع</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview Section -->
+            <div id="section-overview">
+                <div class="top-bar">
+                    <h1><i class="fas fa-tachometer-alt" style="color: var(--accent-gold);"></i> نظرة عامة</h1>
+                    <div class="top-bar-actions">
+                        <span style="color: var(--text-muted); font-size: 0.9rem;" id="currentDate"></span>
+                        <button class="btn btn-outline btn-sm" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+                    </div>
+                </div>
+
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon gold"><i class="fas fa-envelope"></i></div>
+                        <div class="stat-value" id="totalMessages">0</div>
+                        <div class="stat-label">إجمالي الرسائل</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red"><i class="fas fa-envelope-open"></i></div>
+                        <div class="stat-value" id="unreadMessages">0</div>
+                        <div class="stat-label">رسائل غير مقروءة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-users"></i></div>
+                        <div class="stat-value">1,500+</div>
+                        <div class="stat-label">إجمالي العملاء</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-project-diagram"></i></div>
+                        <div class="stat-value">500+</div>
+                        <div class="stat-label">المشاريع المنجزة</div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-clock" style="color: var(--accent-gold);"></i> آخر الرسائل</h2>
+                        <a href="#" onclick="showSection('messages')" class="btn btn-gold btn-sm">عرض الكل</a>
+                    </div>
+                    <div class="messages-list" id="recentMessages">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>لا توجد رسائل بعد</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Section -->
+            <div id="section-messages" style="display: none;">
+                <div class="top-bar">
+                    <h1><i class="fas fa-envelope" style="color: var(--accent-gold);"></i> الرسائل</h1>
+                    <div class="top-bar-actions">
+                        <button class="btn btn-gold btn-sm" onclick="loadMessages()"><i class="fas fa-sync-alt"></i> تحديث</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="messages-list" id="allMessages">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>لا توجد رسائل بعد</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Section -->
+            <div id="section-services" style="display: none;">
+                <div class="top-bar">
+                    <h1><i class="fas fa-boxes" style="color: var(--accent-gold);"></i> إدارة الخدمات</h1>
+                    <div class="top-bar-actions">
+                        <button class="btn btn-gold btn-sm" onclick="loadAllServices()"><i class="fas fa-sync-alt"></i> تحديث</button>
+                    </div>
+                </div>
+
+                <div class="cmp-tabs">
+                    <button class="cmp-tab active" data-scat="crypto" onclick="setServiceTab('crypto')"><i class="fas fa-bitcoin-sign"></i> الخدمات الرقمية</button>
+                    <button class="cmp-tab" data-scat="tech" onclick="setServiceTab('tech')"><i class="fas fa-laptop-code"></i> الخدمات التقنية</button>
+                </div>
+
+                <div class="panel">
+                    <div class="cmp-toolbar">
+                        <h2 style="font-size: 1.1rem; font-weight: 700;"><i class="fas fa-list" style="color: var(--accent-gold);"></i> الخدمات <span id="servicesCount"></span></h2>
+                        <button class="btn btn-gold btn-sm" onclick="openServiceForm()"><i class="fas fa-plus"></i> إضافة خدمة جديدة</button>
+                    </div>
+                    <div class="cmp-list" id="servicesList">
+                        <div class="cmp-loading"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Section -->
+            <div id="section-pricing" style="display: none;">
+                <div class="top-bar">
+                    <h1><i class="fas fa-tags" style="color: var(--accent-gold);"></i> إدارة الأسعار</h1>
+                </div>
+
+                <div class="cmp-tabs">
+                    <button class="cmp-tab active" onclick="setPriceTab('rates')"><i class="fas fa-coins"></i> أسعار العملات الرقمية</button>
+                    <button class="cmp-tab" onclick="setPriceTab('packages')"><i class="fas fa-cubes"></i> باقات البرمجة</button>
+                </div>
+
+                <div id="price-panel-rates" class="panel">
+                    <div class="cmp-toolbar">
+                        <h2 style="font-size: 1.1rem; font-weight: 700;"><i class="fas fa-coins" style="color: var(--accent-gold);"></i> أسعار العملات</h2>
+                        <button class="btn btn-gold btn-sm" onclick="addRateRow()"><i class="fas fa-plus"></i> أضف عملة</button>
+                    </div>
+                    <div class="cmp-note">عدّل الحقول ثم اضغط "حفظ الأسعار". السطر الملغى (فارغ العملة) سيُحذف.</div>
+                    <div id="ratesEditor"></div>
+                    <button class="btn btn-gold" onclick="saveRates()" style="margin-top: 10px;"><i class="fas fa-save"></i> حفظ الأسعار</button>
+                </div>
+
+                <div id="price-panel-packages" class="panel" style="display: none;">
+                    <div class="cmp-toolbar">
+                        <h2 style="font-size: 1.1rem; font-weight: 700;"><i class="fas fa-cubes" style="color: var(--accent-gold);"></i> باقات البرمجة</h2>
+                        <button class="btn btn-gold btn-sm" onclick="addPackage()"><i class="fas fa-plus"></i> إضافة باقة</button>
+                    </div>
+                    <div class="cmp-note">عدّل ثم اضغط "حفظ الباقات".</div>
+                    <div id="packagesEditor"></div>
+                    <button class="btn btn-gold" onclick="savePackages()" style="margin-top: 10px;"><i class="fas fa-save"></i> حفظ الباقات</button>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div id="section-faq" style="display: none;">
+                <div class="top-bar">
+                    <h1><i class="fas fa-question-circle" style="color: var(--accent-gold);"></i> إدارة الأسئلة الشائعة</h1>
+                    <div class="top-bar-actions">
+                        <button class="btn btn-gold btn-sm" onclick="loadFaqList()"><i class="fas fa-sync-alt"></i> تحديث</button>
+                    </div>
+                </div>
+
+                <div class="cmp-tabs">
+                    <button class="cmp-tab active" data-fcat="crypto" onclick="setFaqTab('crypto')"><i class="fas fa-bitcoin-sign"></i> العملات الرقمية</button>
+                    <button class="cmp-tab" data-fcat="tech" onclick="setFaqTab('tech')"><i class="fas fa-laptop-code"></i> التقنية</button>
+                    <button class="cmp-tab" data-fcat="general" onclick="setFaqTab('general')"><i class="fas fa-info-circle"></i> عام</button>
+                </div>
+
+                <div class="panel">
+                    <div class="cmp-toolbar">
+                        <h2 style="font-size: 1.1rem; font-weight: 700;"><i class="fas fa-list" style="color: var(--accent-gold);"></i> الأسئلة <span id="faqCount"></span></h2>
+                        <button class="btn btn-gold btn-sm" onclick="openFaqForm()"><i class="fas fa-plus"></i> إضافة سؤال</button>
+                    </div>
+                    <div class="cmp-list" id="faqList">
+                        <div class="cmp-loading"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="section-settings" style="display: none;">
+                <div class="top-bar">
+                    <h1><i class="fas fa-user-cog" style="color: var(--accent-gold);"></i> الإعدادات</h1>
+                </div>
+
+                <div class="panel" style="max-width: 560px;">
+                    <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;"><i class="fas fa-key" style="color: var(--accent-gold);"></i> تغيير بيانات الدخول</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">عدّل اسم المستخدم وكلمة المرور للوحة التحكم. بعد الحفظ ستُسجّل الخروج وتدخل بالبيانات الجديدة.</p>
+
+                    <div class="cmp-form-grid" style="grid-template-columns: 1fr;">
+                        <div>
+                            <label class="cmp-label" for="crtCurrentPassword">كلمة المرور الحالية <span style="color:#ef4444;">*</span></label>
+                            <input class="cmp-input" type="password" id="crtCurrentPassword" autocomplete="off" style="color: var(--text-light);">
+                        </div>
+                        <div>
+                            <label class="cmp-label" for="crtNewUsername">اسم المستخدم الجديد <span style="color:#ef4444;">*</span></label>
+                            <input class="cmp-input" type="text" id="crtNewUsername" autocomplete="off" dir="ltr" style="text-align:left; color: var(--text-light);">
+                        </div>
+                        <div>
+                            <label class="cmp-label" for="crtNewPassword">كلمة المرور الجديدة <span style="color:#ef4444;">*</span></label>
+                            <input class="cmp-input" type="password" id="crtNewPassword" autocomplete="off" style="color: var(--text-light);">
+                        </div>
+                        <div>
+                            <label class="cmp-label" for="crtConfirmPassword">تأكيد كلمة المرور الجديدة <span style="color:#ef4444;">*</span></label>
+                            <input class="cmp-input" type="password" id="crtConfirmPassword" autocomplete="off" style="color: var(--text-light);">
+                        </div>
+                    </div>
+
+                    <div id="crtMessage" style="min-height: 24px; margin-top: 14px; font-size: 0.9rem;"></div>
+
+                    <div class="cmp-toolbar" style="margin: 0; margin-top: 6px;">
+                        <button class="btn btn-gold" onclick="saveCredentials()"><i class="fas fa-save"></i> حفظ التغييرات</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Service Form Modal -->
+    <div class="cmp-modal" id="serviceModal">
+        <div class="cmp-modal-box">
+            <h3 id="serviceModalTitle">إضافة خدمة جديدة</h3>
+            <div class="cmp-form-grid">
+                <div>
+                    <label class="cmp-label">العنوان *</label>
+                    <input class="cmp-input" id="svcTitle" type="text">
+                </div>
+                <div>
+                    <label class="cmp-label">الأيقونة (fa-...) <span style="opacity:.6">مثال: fa-gamepad</span></label>
+                    <input class="cmp-input" id="svcIcon" type="text" placeholder="fa-star">
+                </div>
+                <div class="full">
+                    <label class="cmp-label">الوصف</label>
+                    <textarea class="cmp-textarea" id="svcDesc"></textarea>
+                </div>
+                <div class="full">
+                    <label class="cmp-label">الميزات (سطر واحد في كل خانة)</label>
+                    <div id="svcFeatures"></div>
+                    <button class="btn btn-outline btn-sm" onclick="addFeatureInput()"><i class="fas fa-plus"></i> إضافة ميزة</button>
+                </div>
+                <div>
+                    <label class="cmp-label">الصورة</label>
+                    <div class="cmp-imgpicker">
+                        <img class="preview" id="svcImgPreview" alt="">
+                        <input class="cmp-input" id="svcImg" type="text" placeholder="/images/..." readonly>
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="openImgPicker('svc')"><i class="fas fa-image"></i> اختر صورة / ارفع</button>
+                </div>
+                <div>
+                    <label class="cmp-label">الترتيب</label>
+                    <input class="cmp-input" id="svcOrder" type="number" value="1">
+                </div>
+                <div>
+                    <label class="cmp-label">القسم</label>
+                    <select class="cmp-input" id="svcCategory">
+                        <option value="crypto">الخدمات الرقمية</option>
+                        <option value="tech">الخدمات التقنية</option>
+                    </select>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="checkbox" id="svcVisible" checked>
+                    <label for="svcVisible" style="color:var(--text-muted); font-size:.9rem;">ظاهر للزوار</label>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-gold" onclick="saveService()"><i class="fas fa-save"></i> حفظ</button>
+                <button class="btn btn-outline" onclick="closeModal('serviceModal')"><i class="fas fa-times"></i> إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Form Modal -->
+    <div class="cmp-modal" id="faqModal">
+        <div class="cmp-modal-box">
+            <h3 id="faqModalTitle">إضافة سؤال</h3>
+            <label class="cmp-label">القسم</label>
+            <select class="cmp-input" id="faqCategory">
+                <option value="crypto">العملات الرقمية</option>
+                <option value="tech">التقنية</option>
+                <option value="general">عام</option>
+            </select>
+            <label class="cmp-label">السؤال *</label>
+            <input class="cmp-input" id="faqQuestion" type="text">
+            <label class="cmp-label">الإجابة</label>
+            <textarea class="cmp-textarea" id="faqAnswer"></textarea>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-gold" onclick="saveFaq()"><i class="fas fa-save"></i> حفظ</button>
+                <button class="btn btn-outline" onclick="closeModal('faqModal')"><i class="fas fa-times"></i> إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Picker Modal -->
+    <div class="cmp-modal" id="imgModal">
+        <div class="cmp-modal-box">
+            <h3>اختر صورة أو ارفع صورة جديدة</h3>
+            <div class="cmp-imgpicker" style="border:1px solid var(--border-color); padding:14px; border-radius:10px; flex-wrap:wrap;">
+                <label class="cmp-label" style="width:100%; margin-bottom:8px;">رفع صورة جديدة من جهازك</label>
+                <input type="file" id="imgUploadInput" accept="image/*">
+                <button class="btn btn-gold btn-sm" onclick="uploadImage()"><i class="fas fa-upload"></i> رفع</button>
+                <span style="color:var(--text-muted); font-size:.8rem;" id="uploadStatus"></span>
+            </div>
+            <div class="cmp-img-grid" id="imgGrid">
+                <div class="cmp-loading"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الصور...</div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button class="btn btn-gold" onclick="confirmImgPick()"><i class="fas fa-check"></i> استخدام هذه الصورة</button>
+                <button class="btn btn-outline" onclick="closeModal('imgModal')"><i class="fas fa-times"></i> إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ar-SA', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Section navigation
+        function showSection(section) {
+            ['overview','messages','services','pricing','faq','settings'].forEach(function(name) {
+                var el = document.getElementById('section-' + name);
+                if (el) el.style.display = (name === section) ? 'block' : 'none';
+            });
+
+            document.querySelectorAll('.sidebar-menu a').forEach(function(a) { a.classList.remove('active'); });
+            if (event && event.target && event.target.closest) {
+                var link = event.target.closest('a');
+                if (link) link.classList.add('active');
+            }
+
+            if (section === 'messages') loadMessages();
+            if (section === 'services') loadAllServices();
+            if (section === 'pricing') { loadRates(); loadPackages(); }
+            if (section === 'faq') loadFaqList();
+        }
+
+        const serviceNames = {
+            'buy-sell': 'شراء وبيع العملات الرقمية',
+            'convert': 'تحويل العملات الرقمية',
+            'web-dev': 'تطوير مواقع الويب',
+            'app-dev': 'تطوير تطبيقات الهاتف',
+            'erp-crm': 'أنظمة ERP / CRM',
+            'consulting': 'استشارات تقنية',
+            'other': 'أخرى',
+        };
+
+        function esc(value) {
+            return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+            });
+        }
+
+        function renderMessages(messages, containerId, limit) {
+            const container = document.getElementById(containerId);
+            if (!messages || messages.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>لا توجد رسائل بعد</p></div>';
+                return;
+            }
+
+            const displayMessages = limit ? messages.slice(-limit).reverse() : messages.slice().reverse();
+
+            container.innerHTML = displayMessages.map(function(msg, i) {
+                const realIndex = messages.length - 1 - i;
+                const date = new Date(msg.date).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const unreadClass = !msg.read ? 'unread' : '';
+                const badgeClass = !msg.read ? 'badge-gold' : 'badge-green';
+                const badgeText = !msg.read ? 'جديد' : 'مقروءة';
+
+                return '<div class="message-item ' + unreadClass + '">' +
+                    '<div class="message-header">' +
+                        '<h4>' + esc(msg.name) + ' <span class="badge ' + badgeClass + '">' + badgeText + '</span></h4>' +
+                        '<span style="color: var(--text-muted); font-size: 0.85rem;">' + date + '</span>' +
+                    '</div>' +
+                    '<div class="message-meta">' +
+                        '<span><i class="fas fa-envelope"></i> ' + esc(msg.email) + '</span>' +
+                        '<span><i class="fas fa-phone"></i> ' + esc(msg.phone || 'غير محدد') + '</span>' +
+                        '<span><i class="fas fa-tag"></i> ' + esc(serviceNames[msg.service] || 'غير محدد') + '</span>' +
+                    '</div>' +
+                    '<div class="message-body">' + esc(msg.message).replace(/\n/g, '<br>') + '</div>' +
+                    '<div class="message-actions">' +
+                        (!msg.read ? '<button class="btn btn-gold btn-sm" onclick="markRead(' + realIndex + ')"><i class="fas fa-check"></i> تحديد كمقروءة</button>' : '') +
+                        '<button class="btn btn-outline btn-sm" onclick="deleteMessage(' + realIndex + ')"><i class="fas fa-trash"></i> حذف</button>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        // Randomize login field `name` attributes every load so browsers cannot
+        // recognize this form as a login form and won't save/offer the username.
+        (function () {
+            try {
+                var rand = Math.random().toString(36).slice(2);
+                var u = document.getElementById('loginUsername');
+                var p = document.getElementById('loginPassword');
+                if (u) u.setAttribute('name', 'u_' + rand);
+                if (p) p.setAttribute('name', 'p_' + rand);
+            } catch (e) {}
+        })();
+
+        var cryptovaToken = localStorage.getItem('cryptova_token') || null;
+        window.cryptovaToken = cryptovaToken;
+
+        function authHeaders() {
+            return cryptovaToken ? { 'x-admin-token': cryptovaToken } : {};
+        }
+
+        function showLogin() {
+            document.getElementById('appShell').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            var err = document.getElementById('loginError');
+            err.textContent = '';
+            err.classList.remove('show');
+            setTimeout(function() { document.getElementById('loginUsername').focus(); }, 50);
+        }
+
+        function showApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appShell').classList.remove('hidden');
+        }
+
+        function handleApiResponse(response) {
+            if (response.status === 401) {
+                cryptovaToken = null;
+                window.cryptovaToken = null;
+                localStorage.removeItem('cryptova_token');
+                showLogin();
+                throw new Error('unauthorized');
+            }
+            return response.json();
+        }
+
+        async function doLogin() {
+            var username = document.getElementById('loginUsername').value.trim();
+            var password = document.getElementById('loginPassword').value;
+            var errorEl = document.getElementById('loginError');
+            errorEl.classList.remove('show');
+            errorEl.textContent = '';
+            if (!username && !password) { errorEl.textContent = 'أدخل اسم المستخدم وكلمة المرور'; errorEl.classList.add('show'); return; }
+            if (!username) { errorEl.textContent = 'أدخل اسم المستخدم'; errorEl.classList.add('show'); return; }
+            if (!password) { errorEl.textContent = 'أدخل كلمة المرور'; errorEl.classList.add('show'); return; }
+            try {
+                var response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username, password: password })
+                });
+                var data = await response.json();
+                if (data.success && data.token) {
+                    cryptovaToken = data.token;
+                    window.cryptovaToken = cryptovaToken;
+                    localStorage.setItem('cryptova_token', data.token);
+                    showApp();
+                    loadMessages();
+                } else {
+                    errorEl.textContent = data.message || 'اسم المستخدم أو كلمة المرور غير صحيحة';
+                    errorEl.classList.add('show');
+                }
+            } catch (e) {
+                if (e.message !== 'unauthorized') { errorEl.textContent = 'تعذر الاتصال بالخادم'; errorEl.classList.add('show'); }
+            }
+        }
+
+        async function doLogout() {
+            try {
+                await fetch('/api/admin/logout', { method: 'POST', headers: authHeaders() });
+            } catch (e) {}
+            cryptovaToken = null;
+            window.cryptovaToken = null;
+            localStorage.removeItem('cryptova_token');
+            var form = document.getElementById('loginForm');
+            try { if (form && form.reset) form.reset(); } catch (e) {}
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            showLogin();
+        }
+
+        function setCrtMessage(type, text) {
+            var el = document.getElementById('crtMessage');
+            var icon = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
+            var color = type === 'error' ? '#ef4444' : '#22c55e';
+            el.innerHTML = '<i class="fas ' + icon + '" style="color:' + color + '; margin-left:6px;"></i><span style="color:' + color + ';">' + esc(text) + '</span>';
+        }
+
+        async function saveCredentials() {
+            var currentPassword = document.getElementById('crtCurrentPassword').value;
+            var newUsername = document.getElementById('crtNewUsername').value.trim();
+            var newPassword = document.getElementById('crtNewPassword').value;
+            var confirmPassword = document.getElementById('crtConfirmPassword').value;
+            var btn = document.querySelector('#section-settings .btn-gold');
+            var orig = btn ? btn.innerHTML : '';
+
+            if (!currentPassword) return setCrtMessage('error', 'أدخل كلمة المرور الحالية للتأكيد');
+            if (newUsername.length < 3) return setCrtMessage('error', 'اسم المستخدم يجب أن يكون ٣ أحرف على الأقل');
+            if (newPassword.length < 6) return setCrtMessage('error', 'كلمة المرور يجب أن تكون ٦ أحرف على الأقل');
+            if (newPassword !== confirmPassword) return setCrtMessage('error', 'تأكيد كلمة المرور لا يطابق كلمة المرور الجديدة');
+
+            if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+            try {
+                var response = await fetch('/api/admin/change-credentials', {
+                    method: 'POST',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+                    body: JSON.stringify({ currentPassword: currentPassword, newUsername: newUsername, newPassword: newPassword })
+                });
+                if (response.status === 401) {
+                    // Either wrong current password or expired session — show the server's specific message
+                    var errData = {};
+                    try { errData = await response.json(); } catch (e2) {}
+                    setCrtMessage('error', errData.message || (cryptovaToken ? 'كلمة المرور الحالية غير صحيحة' : 'انتهت صلاحية الجلسة، سجّل الدخول مجدداً'));
+                    if (btn) btn.innerHTML = orig;
+                    if (!cryptovaToken) { showLogin(); }
+                    return;
+                }
+                var data = await response.json();
+                if (data.success) {
+                    setCrtMessage('success', data.message || 'تم تحديث بيانات الدخول بنجاح');
+                    document.getElementById('crtCurrentPassword').value = '';
+                    document.getElementById('crtNewPassword').value = '';
+                    document.getElementById('crtConfirmPassword').value = '';
+                    setTimeout(function() {
+                        cryptovaToken = null;
+                        window.cryptovaToken = null;
+                        localStorage.removeItem('cryptova_token');
+                        showLogin();
+                    }, 1500);
+                } else {
+                    setCrtMessage('error', data.message || 'تعذر تحديث بيانات الدخول');
+                }
+            } catch (e) {
+                setCrtMessage('error', 'تعذر الاتصال بالخادم');
+            }
+            if (btn) btn.innerHTML = orig;
+        }
+
+        document.getElementById('loginUsername').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+        });
+
+        async function loadMessages() {
+            try {
+                const response = await fetch('/api/contacts', { headers: authHeaders() });
+                const data = await handleApiResponse(response);
+
+                if (data.success) {
+                    renderMessages(data.data, 'allMessages');
+                    renderMessages(data.data, 'recentMessages', 3);
+                    document.getElementById('totalMessages').textContent = data.data.length;
+                    document.getElementById('unreadMessages').textContent = data.data.filter(function(m) { return !m.read; }).length;
+                }
+            } catch (e) {
+                if (e.message !== 'unauthorized') console.log('Could not load messages', e);
+            }
+        }
+
+        async function markRead(index) {
+            try {
+                await fetch('/api/contacts/' + index + '/read', { method: 'PUT', headers: authHeaders() });
+                loadMessages();
+            } catch (e) { if (e.message !== 'unauthorized') loadMessages(); }
+        }
+
+        async function deleteMessage(index) {
+            if (confirm('هل أنت متأكد من حذف هذه الرسالة؟')) {
+                try {
+                    await fetch('/api/contacts/' + index, { method: 'DELETE', headers: authHeaders() });
+                    loadMessages();
+                } catch (e) { if (e.message !== 'unauthorized') loadMessages(); }
+            }
+        }
+
+        // Initial load
+        if (cryptovaToken) {
+            showApp();
+            loadMessages();
+        } else {
+            showLogin();
+        }
+
+        // ==================== CONTENT MANAGEMENT ====================
+        var currentServiceCategory = 'crypto';
+        var currentFaqCategory = 'crypto';
+        var imgPickTarget = null;
+        var allServices = [];
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        // ---------- SERVICES ----------
+        function setServiceTab(cat) {
+            currentServiceCategory = cat;
+            document.querySelectorAll('[data-scat]').forEach(function(b) { b.classList.remove('active'); });
+            var btn = document.querySelector('[data-scat="' + cat + '"]');
+            if (btn) btn.classList.add('active');
+            loadAllServices();
+        }
+
+        async function loadAllServices() {
+            var list = document.getElementById('servicesList');
+            list.innerHTML = '<div class="cmp-loading"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
+            try {
+                var resp = await fetch('/api/content/services/all', { headers: authHeaders() });
+                var data = await handleApiResponse(resp);
+                allServices = data.data || [];
+                renderServicesList();
+            } catch (e) {
+                if (e.message !== 'unauthorized') console.log(e);
+            }
+        }
+
+        function renderServicesList() {
+            var list = document.getElementById('servicesList');
+            var catServices = allServices.filter(function(s) { return s.category === currentServiceCategory; });
+            document.getElementById('servicesCount').textContent = '(' + catServices.length + ')';
+
+            if (catServices.length === 0) {
+                list.innerHTML = '<div class="empty-state"><i class="fas fa-boxes"></i><p>لا توجد خدمات في هذا القسم</p></div>';
+                return;
+            }
+
+            list.innerHTML = catServices.map(function(s, idx) {
+                var vis = s.visible !== false;
+                var img = s.image ? '<img class="cmp-thumb" src="' + esc(s.image) + '" alt="">' : '<div class="cmp-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted)"><i class="fas fa-image"></i></div>';
+                return '<div class="cmp-item" data-id="' + esc(s.id) + '">' +
+                    img +
+                    '<div class="cmp-main">' +
+                        '<div class="cmp-title">' + esc(s.title) +
+                            '<span class="cmp-badge ' + (vis ? 'on' : 'off') + '">' + (vis ? 'ظاهر' : 'مخفي') + '</span>' +
+                        '</div>' +
+                        '<div class="cmp-meta">الترتيب: ' + (s.order || 0) + ' | ' + (s.features ? s.features.length : 0) + ' ميزات</div>' +
+                    '</div>' +
+                    '<div class="cmp-actions">' +
+                        '<button class="btn btn-outline btn-sm" onclick="moveService(\'' + esc(s.id) + '\', \'up\')" title="أعلى"><i class="fas fa-arrow-up"></i></button>' +
+                        '<button class="btn btn-outline btn-sm" onclick="moveService(\'' + esc(s.id) + '\', \'down\')" title="أسفل"><i class="fas fa-arrow-down"></i></button>' +
+                        '<button class="btn btn-outline btn-sm" onclick="toggleServiceVisible(\'' + esc(s.id) + '\')">' + (vis ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>') + '</button>' +
+                        '<button class="btn btn-outline btn-sm" onclick="openServiceForm(\'' + esc(s.id) + '\')"><i class="fas fa-edit"></i></button>' +
+                        '<button class="btn btn-outline btn-sm" onclick="deleteService(\'' + esc(s.id) + '\')" style="color:#ef4444"><i class="fas fa-trash"></i></button>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        function openServiceForm(id) {
+            var svc = id ? allServices.find(function(s) { return s.id === id; }) : null;
+            document.getElementById('serviceModalTitle').textContent = svc ? 'تعديل الخدمة' : 'إضافة خدمة جديدة';
+            var featuresBox = document.getElementById('svcFeatures');
+            featuresBox.innerHTML = '';
+            var feats = svc && svc.features ? svc.features : [];
+            if (feats.length === 0) feats = [''];
+            feats.forEach(function(f) { addFeatureInput(f); });
+
+            document.getElementById('svcTitle').value = svc ? svc.title : '';
+            document.getElementById('svcIcon').value = svc ? (svc.icon || '') : 'fa-star';
+            document.getElementById('svcDesc').value = svc ? svc.description : '';
+            document.getElementById('svcImg').value = svc ? (svc.image || '') : '';
+            document.getElementById('svcImgPreview').src = (svc && svc.image) ? svc.image : '';
+            document.getElementById('svcOrder').value = svc ? (svc.order || 1) : (allServices.filter(function(x){return x.category===currentServiceCategory;}).length + 1);
+            document.getElementById('svcCategory').value = svc ? svc.category : currentServiceCategory;
+            document.getElementById('svcVisible').checked = svc ? svc.visible !== false : true;
+
+            if (svc) document.getElementById('serviceModal').setAttribute('data-edit-id', svc.id);
+            else document.getElementById('serviceModal').removeAttribute('data-edit-id');
+
+            document.getElementById('serviceModal').classList.add('open');
+        }
+
+        function addFeatureInput(value) {
+            var box = document.getElementById('svcFeatures');
+            var div = document.createElement('div');
+            div.className = 'cmp-feature-row';
+            div.innerHTML = '<input class="cmp-input" style="margin-bottom:0" value="' + esc(value || '') + '">' +
+                '<button class="btn btn-outline btn-sm" onclick="this.parentNode.remove()"><i class="fas fa-times"></i></button>';
+            box.appendChild(div);
+        }
+
+        async function saveService() {
+            var editId = document.getElementById('serviceModal').getAttribute('data-edit-id');
+            var features = [];
+            document.querySelectorAll('#svcFeatures .cmp-feature-row input').forEach(function(i) {
+                var v = i.value.trim();
+                if (v) features.push(v);
+            });
+            var payload = {
+                title: document.getElementById('svcTitle').value.trim(),
+                icon: document.getElementById('svcIcon').value.trim() || 'fa-star',
+                description: document.getElementById('svcDesc').value.trim(),
+                image: document.getElementById('svcImg').value.trim(),
+                order: parseInt(document.getElementById('svcOrder').value, 10) || 0,
+                category: document.getElementById('svcCategory').value,
+                visible: document.getElementById('svcVisible').checked,
+                features: features,
+            };
+            if (!payload.title) { alert('العنوان مطلوب'); return; }
+            try {
+                var url = editId ? ('/api/content/services/' + editId) : '/api/content/services';
+                var method = editId ? 'PUT' : 'POST';
+                await fetch(url, { method: method, headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()), body: JSON.stringify(payload) }).then(handleApiResponse);
+                closeModal('serviceModal');
+                loadAllServices();
+            } catch (e) { if (e.message !== 'unauthorized') alert('فشل الحفظ'); }
+        }
+
+        async function deleteService(id) {
+            if (!confirm('حذف هذه الخدمة نهائياً؟')) return;
+            try {
+                await fetch('/api/content/services/' + id, { method: 'DELETE', headers: authHeaders() }).then(handleApiResponse);
+                loadAllServices();
+            } catch (e) { if (e.message !== 'unauthorized') alert('فشل الحذف'); }
+        }
+
+        async function toggleServiceVisible(id) {
+            var svc = allServices.find(function(s) { return s.id === id; });
+            if (!svc) return;
+            try {
+                await fetch('/api/content/services/' + id, { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()), body: JSON.stringify({ visible: !(svc.visible !== false) }) }).then(handleApiResponse);
+                loadAllServices();
+            } catch (e) { if (e.message !== 'unauthorized') alert('فشل'); }
+        }
+
+        async function moveService(id, dir) {
+            var cat = currentServiceCategory;
+            var ordered = allServices.filter(function(s) { return s.category === cat; }).sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
+            var idx = ordered.findIndex(function(s) { return s.id === id; });
+            if (idx === -1) return;
+            var swap = dir === 'up' ? idx - 1 : idx + 1;
+            if (swap < 0 || swap >= ordered.length) return;
+            var tmp = ordered[idx]; ordered[idx] = ordered[swap]; ordered[swap] = tmp;
+            var ids = ordered.map(function(s) { return s.id; });
+            try {
+                await fetch('/api/content/services/reorder', { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()), body: JSON.stringify({ ids: ids }) }).then(handleApiResponse);
+                loadAllServices();
+            } catch (e) { if (e.message !== 'unauthorized') alert('فشل إعادة الترتيب'); }
+        }
+
+        // ---------- IMAGE PICKER ----------
+        function openImgPicker(target) {
+            imgPickTarget = target; // 'svc' or 'faq'
+            document.getElementById('imgModal').classList.add('open');
+            document.getElementById('uploadStatus').textContent = '';
+            loadImageGrid();
+        }
+
+        async function loadImageGrid() {
+            var grid = document.getElementById('imgGrid');
+            grid.innerHTML = '<div class="cmp-loading"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الصور...</div>';
+            try {
+                var resp = await fetch('/api/content/images', { headers: authHeaders() });
+                var data = await handleApiResponse(resp);
+                var images = data.data || [];
+                if (images.length === 0) {
+                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-images"></i><p>لا توجد صور بعد. ارفع صورة من الأعلى.</p></div>';
+                    return;
+                }
+                grid.innerHTML = '';
+                images.forEach(function(img) {
+                    var d = document.createElement('div');
+                    d.className = 'cmp-img-opt';
+                    d.setAttribute('data-url', img.url);
+                    d.innerHTML = '<img src="' + esc(img.url) + '" alt=""><div style="font-size:.7rem;color:var(--text-muted);padding:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(img.name) + '</div>';
+                    d.addEventListener('click', function() {
+                        document.querySelectorAll('.cmp-img-opt').forEach(function(x) { x.classList.remove('selected'); });
+                        d.classList.add('selected');
+                    });
+                    grid.appendChild(d);
+                });
+            } catch (e) { if (e.message !== 'unauthorized') console.log(e); }
+        }
+
+        async function uploadImage() {
+            var input = document.getElementById('imgUploadInput');
+            if (!input.files || input.files.length === 0) { alert('اختر صورة أولاً'); return; }
+            var fd = new FormData();
+            fd.append('image', input.files[0]);
+            var status = document.getElementById('uploadStatus');
+            status.textContent = 'جاري الرفع...';
+            try {
+                var resp = await fetch('/api/content/upload', { method: 'POST', headers: authHeaders(), body: fd });
+                var data = await handleApiResponse(resp);
+                if (data.success) {
+                    status.textContent = 'تم الرفع ✓';
+                    loadImageGrid();
+                } else status.textContent = data.message;
+            } catch (e) { if (e.message !== 'unauthorized') status.textContent = 'فشل الرفع'; }
+        }
+
+        function confirmImgPick() {
+            var selected = document.querySelector('.cmp-img-opt.selected');
+            var url = selected ? selected.getAttribute('data-url') : '';
+            if (!url) { alert('اختر صورة من القائمة'); return; }
+            if (imgPickTarget === 'svc') {
+                document.getElementById('svcImg').value = url;
+                document.getElementById('svcImgPreview').src = url;
+            }
+            closeModal('imgModal');
+        }
+
+        // ---------- PRICING ----------
+        function setPriceTab(tab) {
+            document.getElementById('price-panel-rates').style.display = tab === 'rates' ? 'block' : 'none';
+            document.getElementById('price-panel-packages').style.display = tab === 'packages' ? 'block' : 'none';
+            var tabs = document.querySelectorAll('#section-pricing .cmp-tab');
+            tabs.forEach(function(t) { t.classList.remove('active'); });
+            if (tab === 'rates') tabs[0].classList.add('active');
+            else tabs[1].classList.add('active');
+        }
+
+        async function loadRates() {
+            var box = document.getElementById('ratesEditor');
+            box.innerHTML = '<div class="cmp-loading"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
+            try {
+                var resp = await fetch('/api/content/pricing', { headers: { Accept: 'application/json' } });
+                var data = await resp.json();
+                var rates = data.data && data.data.cryptoRates ? data.data.cryptoRates : [];
+                box.innerHTML = '';
+                if (rates.length === 0) addRateRow({});
+                rates.forEach(function(r) { addRateRow(r); });
+            } catch (e) { console.log(e); }
+        }
+
+        function addRateRow(rate) {
+            rate = rate || {};
+            var box = document.getElementById('ratesEditor');
+            var div = document.createElement('div');
+            div.className = 'cmp-item';
+            div.style.flexWrap = 'wrap';
+            div.innerHTML =
+                '<div style="flex:1;min-width:120px"><label class="cmp-label">العملة</label><input class="cmp-input rate-currency" value="' + esc(rate.currency || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="flex:1;min-width:100px"><label class="cmp-label">الاسم الكامل</label><input class="cmp-input rate-full" value="' + esc(rate.fullName || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="width:60px"><label class="cmp-label">رمز</label><input class="cmp-input rate-symbol" value="' + esc(rate.symbol || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="width:90px"><label class="cmp-label">لون #</label><input class="cmp-input rate-color" value="' + esc(rate.color || '#d4a843') + '" style="margin-bottom:0"></div>' +
+                '<div style="flex:1;min-width:80px"><label class="cmp-label">الحد الأدنى</label><input class="cmp-input rate-min" value="' + esc(rate.min || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="width:80px"><label class="cmp-label">العمولة</label><input class="cmp-input rate-fee" value="' + esc(rate.fee || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="flex:1;min-width:90px"><label class="cmp-label">السرعة</label><input class="cmp-input rate-speed" value="' + esc(rate.speed || '') + '" style="margin-bottom:0"></div>' +
+                '<button class="btn btn-outline btn-sm" style="align-self:flex-end;margin-bottom:14px" onclick="this.closest(\'.cmp-item\').remove()"><i class="fas fa-times"></i></button>';
+            box.appendChild(div);
+        }
+
+        async function saveRates() {
+            var rates = [];
+            document.querySelectorAll('#ratesEditor .cmp-item').forEach(function(row) {
+                var currency = row.querySelector('.rate-currency').value.trim();
+                if (!currency) return;
+                rates.push({
+                    currency: currency,
+                    fullName: row.querySelector('.rate-full').value.trim(),
+                    symbol: row.querySelector('.rate-symbol').value.trim(),
+                    color: row.querySelector('.rate-color').value.trim(),
+                    min: row.querySelector('.rate-min').value.trim(),
+                    fee: row.querySelector('.rate-fee').value.trim(),
+                    speed: row.querySelector('.rate-speed').value.trim(),
+                });
+            });
+            try {
+                await fetch('/api/content/pricing/rates', { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()), body: JSON.stringify({ rates: rates }) }).then(handleApiResponse);
+                alert('تم حفظ الأسعار');
+                loadRates();
+            } catch (e) { if (e.message !== 'unauthorized') alert('فشل الحفظ'); }
+        }
+
+        async function loadPackages() {
+            var box = document.getElementById('packagesEditor');
+            box.innerHTML = '<div class="cmp-loading"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
+            try {
+                var resp = await fetch('/api/content/pricing', { headers: { Accept: 'application/json' } });
+                var data = await resp.json();
+                var pkgs = data.data && data.data.packages ? data.data.packages : [];
+                box.innerHTML = '';
+                if (pkgs.length === 0) addPackage({});
+                pkgs.forEach(function(p) { addPackage(p); });
+            } catch (e) { console.log(e); }
+        }
+
+        function addPackage(pkg) {
+            pkg = pkg || {};
+            var box = document.getElementById('packagesEditor');
+            var div = document.createElement('div');
+            div.className = 'cmp-item';
+            div.style.flexWrap = 'wrap';
+            div.style.alignItems = 'flex-start';
+            div.innerHTML =
+                '<div style="flex:1;min-width:150px"><label class="cmp-label">اسم الباقة</label><input class="cmp-input pkg-name" value="' + esc(pkg.name || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="width:120px"><label class="cmp-label">أيقونة</label><input class="cmp-input pkg-icon" value="' + esc(pkg.icon || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="flex:1;min-width:150px"><label class="cmp-label">وصف مختصر</label><input class="cmp-input pkg-sub" value="' + esc(pkg.subtitle || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="width:110px"><label class="cmp-label">السعر</label><input class="cmp-input pkg-price" value="' + esc(pkg.price || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="width:110px"><label class="cmp-label">ملاحظة سعر</label><input class="cmp-input pkg-note" value="' + esc(pkg.priceNote || '') + '" style="margin-bottom:0"></div>' +
+                '<div style="display:flex;align-items:center;gap:6px;padding-top:6px"><input type="checkbox" class="pkg-featured" ' + (pkg.featured ? 'checked' : '') + '><label style="font-size:.85rem;color:var(--text-muted)">مميزة</label></div>' +
+                '<button class="btn btn-outline btn-sm" style="align-self:flex-end" onclick="this.closest(\'.cmp-item\').remove()"><i class="fas fa-times"></i></button>' +
+                '<div class="full" style="width:100%"><label class="cmp-label">الميزات (سطر في كل خانة)</label><div class="pkg-features">' +
+                ((pkg.features || ['']).map(function(f){ return '<div class="cmp-feature-row"><input class="cmp-input" style="margin-bottom:0" value="' + esc(f || '') + '"><button class="btn btn-outline btn-sm" onclick="this.parentNode.remove()"><i class="fas fa-times"></i></button></div>'; }).join('')) +
+                '</div><button class="btn btn-outline btn-sm" onclick="addPkgFeature(this)"><i class="fas fa-plus"></i> ميزة</button></div>';
+            box.appendChild(div);
+        }
+
+        function addPkgFeature(btn) {
+            var wrap = btn.previousElementSibling;
+            var inner = document.createElement('div');
+            inner.className = 'cmp-feature-row';
+            inner.innerHTML = '<input class="cmp-input" style="margin-bottom:0"><button class="btn btn-outline btn-sm" onclick="this.parentNode.remove()"><i class="fas fa-times"></i></button>';
+            wrap.appendChild(inner);
+        }
+
+        async function savePackages() {
+            var packages = [];
+            document.querySelectorAll('#packagesEditor .cmp-item').forEach(function(p) {
+                var name = p.querySelector('.pkg-name').value.trim();
+                if (!name) return;
+                var feats = [];
+                p.querySelectorAll('.pkg-features .cmp-feature-row input').forEach(function(i) { var v = i.value.trim(); if (v) feats.push(v); });
+                packages.push({
+                    name: name,
+                    icon: p.querySelector('.pkg-icon').value.trim() || 'fa-star',
+                    subtitle: p.querySelector('.pkg-sub').value.trim(),
+                    price: p.querySelector('.pkg-price').value.trim(),
+                    priceNote: p.querySelector('.pkg-note').value.trim(),
+                    featured: p.querySelector('.pkg-featured').checked,
+                    features: feats,
+                });
+            });
+            try {
+                await fetch('/api/content/pricing/packages', { method: 'PUT', headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()), body: JSON.stringify({ packages: packages }) }).then(handleApiResponse);
+                alert('تم حفظ الباقات');
+                loadPackages();
+            } catch (e) { if (e.message !== 'unauthorized') alert('فشل الحفظ'); }
+        }
+
+        // ---------- FAQ ----------
+        function setFaqTab(cat) {
+            currentFaqCategory = cat;
+            document.querySelectorAll('[data-fcat]').forEach(function(b) { b.classList.remove('active'); });
+            var btn = document.querySelector('[data-fcat="' + cat + '"]');
+            if (btn) btn.classList.add('active');
+            loadFaqList();
+        }
+
+        async function loadFaqList() {
+            var list = document.getElementById('faqList');
+            list.innerHTML = '<div class="cmp-loading"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
+            var allFaq = [];
+            try {
+                var resp = await fetch('/api/content/faq/all', { headers: authHeaders() });
+                var data = await handleApiResponse(resp);
+                allFaq = data.data || [];
+            } catch (e) { if (e.message !== 'unauthorized') console.log(e); return; }
+
+            var catFaq = allFaq.filter(function(f) { return f.category === currentFaqCategory; });
+            document.getElementById('faqCount').textContent = '(' + catFaq.length + ')';
+            if (catFaq.length === 0) {
+                list.innerHTML = '<div class="empty-state"><i class="fas fa-question-circle"></i><p>لا توجد أسئلة في هذا القسم</p></div>';
+                return;
+            }
+            list.innerHTML = catFaq.map(function(f) {
+                return '<div class="cmp-item" data-id="' + esc(f.id) + '">' +
+                    '<div class="cmp-main">' +
+                        '<div class="cmp-title">' + esc(f.question) + '</div>' +
+                        '<div class="cmp-meta" style="max-height:44px;overflow:hidden;text-overflow:ellipsis">' + esc(f.answer) + '</div>' +
+                    '</div>' +
+                    '<div class="cmp-actions">' +
+                        '<button class="btn btn-outline btn-sm" onclick="openFaqForm(\'' + esc(f.id) + '\')"><i class="fas fa-edit"></i></button>' +
+                        '<button class="btn btn-outline btn-sm" onclick="deleteFaq(\'' + esc(f.id) + '\')" style="color:#ef4444"><i class="fas fa-trash"></i></button>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        async function openFaqForm(id) {
+            if (id) {
+                var all = [];
+                try {
+                    var resp = await fetch('/api/content/faq/all', { headers: authHeaders() });
+                    var data = await handleApiResponse(resp);
+                    all = data.data || [];
+                } catch (e) {}
+                var item = all.find(function(f) { return f.id === id; });
+                if (item) {
+                    document.getElementById('faqModal').setAttribute('data-edit-id', item.id);
+                    document.getElementById('faqModalTitle').textContent = 'تعديل السؤال';
+                    document.getElementById('faqCategory').value = item.category;
+                    document.getElementById('faqQuestion').value = item.question;
+                    document.getElementById('faqAnswer').value = item.answer;
+                }
+            } else {
+                document.getElementById('faqModal').removeAttribute('data-edit-id');
+                document.getElementById('faqModalTitle').textContent = 'إضافة سؤال';
+                document.getElementById('faqCategory').value = currentFaqCategory;
+                document.getElementById('faqQuestion').value = '';
+                document.getElementById('faqAnswer').value = '';
+            }
+            document.getElementById('faqModal').classList.add('open');
+        }
+
+        async function saveFaq() {
+            var id = document.getElementById('faqModal').getAttribute('data-edit-id');
+            var payload = {
+                question: document.getElementById('faqQuestion').value.trim(),
+                answer: document.getElementById('faqAnswer').value.trim(),
+                category: document.getElementById('faqCategory').value,
+            };
+            if (!payload.question) { alert('السؤال مطلوب'); return; }
+            var url = id ? ('/api/content/faq/' + id) : '/api/content/faq';
+            var method = id ? 'PUT' : 'POST';
+            try {
+                await fetch(url, { method: method, headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()), body: JSON.stringify(payload) }).then(handleApiResponse);
+                closeModal('faqModal');
+                loadFaqList();
+            } catch (e) { if (e.message !== 'unauthorized') alert('فشل الحفظ'); }
+        }
+
+        async function deleteFaq(id) {
+            if (!confirm('حذف هذا السؤال؟')) return;
+            try {
+                await fetch('/api/content/faq/' + id, { method: 'DELETE', headers: authHeaders() }).then(handleApiResponse);
+                loadFaqList();
+            } catch (e) { if (e.message !== 'unauthorized') alert('فشل الحذف'); }
+        }
+    </script>
+</body>
+</html>

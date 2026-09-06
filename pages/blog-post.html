@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="مقال - Cryptova">
+    <meta name="theme-color" content="#0a1628">
+    <title>مقال | Cryptova</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/fontawesome/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .blog-post-hero { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 40px; margin-bottom: 40px; text-align: center; }
+        .blog-post-hero .blog-tag { display: inline-block; margin-bottom: 16px; }
+        .blog-post-hero h1 { font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.5; margin-bottom: 20px; }
+        .blog-post-meta { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; color: var(--text-muted); font-size: 0.9rem; }
+        .blog-post-meta span { display: inline-flex; align-items: center; gap: 8px; }
+        .blog-post-hero-img { width: 100%; max-height: 420px; object-fit: cover; border-radius: 12px; margin-top: 24px; }
+        .blog-post-hero-icon { width: 100%; max-height: 420px; object-fit: cover; border-radius: 12px; margin-top: 24px; display: flex; align-items: center; justify-content: center; min-height: 220px; font-size: 4rem; color: var(--accent-gold); }
+        .blog-post-body { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 40px; line-height: 2; font-size: 1.05rem; }
+        .blog-post-body p { margin-bottom: 20px; color: var(--text-color); }
+        .blog-post-body h2 { color: var(--accent-gold); margin: 30px 0 15px; font-size: 1.4rem; }
+        .blog-post-body h3 { color: var(--accent-gold); margin: 24px 0 12px; font-size: 1.2rem; }
+        .blog-post-source { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .blog-post-source a { color: var(--accent-gold); text-decoration: none; }
+        .blog-post-source a:hover { text-decoration: underline; }
+        .blog-post-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 30px; }
+        .blog-related { margin-top: 50px; }
+        .blog-related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+        .blog-related-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; transition: var(--transition); }
+        .blog-related-card:hover { transform: translateY(-5px); border-color: var(--accent-gold); }
+        .blog-related-card .blog-content { padding: 20px; }
+        .blog-related-card h3 { font-size: 1.05rem; line-height: 1.6; margin-bottom: 10px; }
+        .blog-related-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .blog-related-card .blog-meta { margin-bottom: 12px; }
+        .blog-back { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; margin-bottom: 20px; transition: var(--transition); }
+        .blog-back:hover { color: var(--accent-gold); }
+        .post-loading { text-align: center; padding: 80px 20px; color: var(--text-muted); }
+        .post-loading .spinner { border: 3px solid var(--border-color); border-top-color: var(--accent-gold); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .post-not-found { text-align: center; padding: 80px 20px; }
+        .post-not-found h2 { color: var(--accent-gold); margin-bottom: 16px; }
+        .content-paragraph { white-space: pre-line; }
+    </style>
+</head>
+<body>
+
+    <div class="loading-screen"><div class="loading-spinner"></div><div class="loading-text">Cryptova</div></div>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                <img src="../images/IMG-20260826-WA0004.jpg" alt="شعار Cryptova" class="logo-img">
+                <div class="brand-text">Crypto<span class="gold">va</span></div>
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="/" class="nav-link">الرئيسية</a></li>
+                <li><a href="/svc-lI_e2m2Zgoqo" class="nav-link">الخدمات الرقمية</a></li>
+                <li><a href="/tech-Y-6Ob_UUKZ9g" class="nav-link">الخدمات التقنية</a></li>
+                <li><a href="/price-uaLfoLjpibrD" class="nav-link">الأسعار</a></li>
+                <li><a href="/blog-hBgYoFVGcYLJ" class="nav-link active">المدونة</a></li>
+                <li><a href="/faq-7puDJr3muiiJ" class="nav-link">الأسئلة الشائعة</a></li>
+                <li><a href="/contact-Rb1jI0TUQy-s" class="nav-link">تواصل معنا</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <a href="/contact-Rb1jI0TUQy-s" class="btn btn-gold btn-sm"><i class="fas fa-paper-plane"></i> ابدأ الآن</a>
+                <button class="mobile-toggle" aria-label="القائمة"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </nav>
+    <div class="nav-overlay"></div>
+
+    <section class="section">
+        <div class="container">
+
+            <div id="postContainer">
+
+                <a href="/blog-hBgYoFVGcYLJ" class="blog-back"><i class="fas fa-arrow-right"></i> عودة إلى المدونة</a>
+
+                <!-- Loading state -->
+                <div id="postLoading" class="post-loading">
+                    <div class="spinner"></div>
+                    <p>جاري تحميل المقال...</p>
+                </div>
+
+                <!-- Not found state -->
+                <div id="postNotFound" class="post-not-found" style="display:none;">
+                    <h2><i class="fas fa-exclamation-circle"></i> المقال غير موجود</h2>
+                    <p>عذراً، لم نتمكن من العثور على هذا المقال.</p>
+                    <div class="blog-post-actions">
+                        <a href="/blog-hBgYoFVGcYLJ" class="btn btn-gold"><i class="fas fa-arrow-right"></i> العودة إلى المدونة</a>
+                    </div>
+                </div>
+
+                <!-- Article content (filled by JS) -->
+                <div id="postContent" style="display:none;">
+                    <article class="blog-post-hero">
+                        <span id="postTag" class="blog-tag"></span>
+                        <h1 id="postTitle"></h1>
+                        <div class="blog-post-meta">
+                            <span><i class="far fa-calendar"></i> <span id="postDate"></span></span>
+                            <span><i class="far fa-clock"></i> <span id="postReadTime"></span></span>
+                            <span><i class="fas fa-newspaper"></i> <span id="postSource"></span></span>
+                        </div>
+                        <div id="postHeroImage"></div>
+                    </article>
+
+                    <article class="blog-post-body">
+                        <p id="postBodyContent" class="content-paragraph"></p>
+                        <div class="blog-post-source" id="postSourceLink" style="display:none;">
+                            <span><i class="fas fa-external-link-alt"></i> المصدر الأصلي:</span>
+                            <a id="postOriginalLink" href="#" target="_blank" rel="noopener noreferrer">عرض المقال الأصلي</a>
+                        </div>
+                    </article>
+
+                    <div class="blog-post-actions">
+                        <a href="/blog-hBgYoFVGcYLJ" class="btn btn-gold"><i class="fas fa-arrow-right"></i> المزيد من المقالات</a>
+                        <a href="/contact-Rb1jI0TUQy-s" class="btn btn-outline"><i class="fas fa-paper-plane"></i> تواصل معنا</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related posts -->
+            <div class="blog-related" id="relatedSection" style="display:none;">
+                <h2 class="section-title">مقالات <span class="gold">ذات صلة</span></h2>
+                <div class="blog-related-grid" id="relatedGrid"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box" data-aos="zoom-in">
+                <h2 class="section-title">اشترك في <span class="gold">نشرتنا البريدية</span></h2>
+                <p class="section-subtitle">احصل على آخر الأخبار والمقالات مباشرة في بريدك</p>
+                <form class="newsletter-form" style="margin: 0 auto;" onsubmit="event.preventDefault(); showToast('تم الاشتراك بنجاح!');">
+                    <input type="email" placeholder="أدخل بريدك الإلكتروني" required>
+                    <button type="submit" class="btn btn-gold"><i class="fas fa-paper-plane"></i> اشترك</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <img src="../images/IMG-20260826-WA0004.jpg" alt="شعار Cryptova" class="brand-logo">
+                    <span class="brand-text">Crypto<span style="color: var(--accent-gold);">va</span></span>
+                    <p>نقدم لك حلولاً متكاملة في عالم العملات الرقمية والتقنية.</p>
+                    <div class="footer-social">
+                        <a href="https://facebook.com/Cryptova_ye" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://x.com/Cryptova_ye" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com/cryptova.ye" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                        <a href="https://t.me/Cryptova_ye" target="_blank" rel="noopener" aria-label="تيليجرام"><i class="fab fa-telegram-plane"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>روابط سريعة</h4>
+                    <ul>
+                        <li><a href="/">الرئيسية</a></li>
+                        <li><a href="/svc-lI_e2m2Zgoqo">الخدمات الرقمية</a></li>
+                        <li><a href="/price-uaLfoLjpibrD">الأسعار</a></li>
+                        <li><a href="/contact-Rb1jI0TUQy-s">تواصل معنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>تواصل معنا</h4>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i><span>صنعاء، اليمن</span></li>
+                        <li><i class="fas fa-phone"></i><span dir="ltr">+967 785 628 409</span></li>
+                        <li><i class="fas fa-envelope"></i><span>cryptovaye@gmail.com</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Cryptova. جميع الحقوق محفوظة.</span>
+                <span>صُنع بـ <i class="fas fa-heart" style="color: var(--accent-gold);"></i> في اليمن</span>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/967785628409" target="_blank" class="whatsapp-float"><i class="fab fa-whatsapp"></i></a>
+    <button class="scroll-top"><i class="fas fa-chevron-up"></i></button>
+
+    <script src="../js/blog.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+</html>

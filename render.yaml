@@ -1,0 +1,48 @@
+# Render Blueprint — Cryptova website
+# https://render.com/docs/blueprint-spec
+# Usage:
+#   1. Push this repo to a PRIVATE GitHub repository.
+#   2. In Render dashboard → "New" → "Blueprint" → pick the repo.
+#   3. Complete the form (free plan). The DB + Web service get created and linked automatically.
+#   ✳ Env vars marked `sync: false` you must fill in the dashboard afterwards (never commit secrets).
+
+services:
+  - type: web
+    name: cryptova
+    runtime: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: node backend/server.js
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "1"
+      - key: HTTPS
+        value: "1"
+      - key: BLOG_SCHEDULER
+        value: "0"          # free tier sleeps; blog refresh happens on-visit via /api/blog/refresh
+      - key: ADMIN_SESSION_HOURS
+        value: "12"
+      - key: LOGIN_MAX_ATTEMPTS
+        value: "5"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cryptova-db
+          property: connectionString
+      # ─── Set these in the Render dashboard (never commit) ───
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PATH
+        sync: false
+
+  - type: postgres
+    name: cryptova-db
+    plan: free
+    databaseName: cryptova
+    user: cryptova

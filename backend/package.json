@@ -1,0 +1,23 @@
+{
+  "name": "cryptova",
+  "version": "1.0.0",
+  "description": "Cryptova - Professional Crypto & Tech Website",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "multer": "^2.3.0",
+    "nodemailer": "^9.0.5",
+    "pg": "^8.23.0"
+  },
+  "overrides": {
+    "qs": "6.16.0"
+  }
+}
