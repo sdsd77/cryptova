@@ -807,6 +807,49 @@
         }
     };
 
+    // === Social-Link Click Tracking ===
+    // Counts clicks on the site's social accounts (X/Twitter, Telegram, WhatsApp,
+    // Facebook, Instagram, YouTube) by mapping their hostname to a target alias and
+    // firing a lightweight beacon — navigation is never interrupted.
+    (function() {
+        var CLICK_ALIASES = {
+            'facebook.com': 'facebook',
+            'x.com': 'twitter',
+            'twitter.com': 'twitter',
+            't.me': 'telegram',
+            'wa.me': 'whatsapp',
+            'api.whatsapp.com': 'whatsapp',
+            'instagram.com': 'instagram',
+            'youtube.com': 'youtube',
+            'youtu.be': 'youtube',
+        };
+
+        function hostOf(url) {
+            var m = (url || '').match(/^https?:\/\/([^/?#]+)/);
+            return m ? m[1].replace(/^www\./, '').toLowerCase() : '';
+        }
+
+        document.addEventListener('click', function(e) {
+            try {
+                var el = e.target && e.target.closest ? e.target.closest('a') : null;
+                if (!el) return;
+                var alias = CLICK_ALIASES[hostOf(el.getAttribute('href'))];
+                if (!alias) return;
+                var payload = JSON.stringify({ target: alias });
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon('/api/clicks', new Blob([payload], { type: 'application/json' }));
+                } else {
+                    fetch('/api/clicks', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: payload,
+                        keepalive: true,
+                    });
+                }
+            } catch (err) { /* click tracking is best-effort */ }
+        });
+    })();
+
     // === Global Toast Function ===
     window.showToast = function(message) {
         var existingToast = document.querySelector('.toast');

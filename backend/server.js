@@ -591,6 +591,7 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
 
         const rates = await exchange.getRates();
         const cur = (fn) => fn || null;
+        const visitors = analytics.getStats();
         res.json({
             success: true,
             data: {
@@ -621,7 +622,9 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
                     sanaaSar: cur(rates.sanaa && rates.sanaa.sar),
                     adenSar: cur(rates.aden && rates.aden.sar),
                 },
-                visitors: analytics.getStats(),
+                visitors,
+                clicks: visitors.clicks,
+                clicksToday: visitors.clicksToday,
                 blog: (() => {
                     const s = blogScheduler.getStatus();
                     return {
@@ -925,6 +928,33 @@ app.put('/api/content/exchange', requireAdmin, async (req, res) => {
     } catch (err) {
         res.status(500).json({ success: false, message: 'خطأ في حفظ أسعار الصرف' });
     }
+});
+
+// === Social-Link Click Tracking (public, counted for every outbound click) ===
+const SOCIAL_TARGETS = { twitter: 1, telegram: 1, whatsapp: 1, facebook: 1, instagram: 1, youtube: 1 };
+const clickBuckets = new Map();
+function clickRateLimit(req, res, next) {
+    const ip = req.ip || 'unknown';
+    const now = Date.now();
+    const WINDOW_MS = 60000;
+    const MAX = 30;
+    let bucket = clickBuckets.get(ip);
+    if (!bucket || now - bucket.start > WINDOW_MS) bucket = { start: now, count: 0 };
+    bucket.count += 1;
+    clickBuckets.set(ip, bucket);
+    if (bucket.count > MAX) {
+        return res.status(429).json({ success: false });
+    }
+    next();
+}
+app.post('/api/clicks', clickRateLimit, (req, res) => {
+    const target = String((req.body && req.body.target) || '').trim();
+    if (!SOCIAL_TARGETS[target]) {
+        return res.status(400).json({ success: false });
+    }
+    analytics.trackClick(target);
+    res.setHeader('Cache-Control', 'no-store');
+    res.json({ success: true });
 });
 
 // === API 404 (JSON, not HTML) ===

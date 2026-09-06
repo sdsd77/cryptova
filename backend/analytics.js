@@ -28,23 +28,27 @@ function initState() {
     day,
     dayViews: 0,
     dayUniques: new Set(),
-    history: [], // [{ date, views, uniques }] oldest -> newest, excludes today
+    clicks: {},       // lifetime social-link clicks per target
+    dayClicks: {},    // today's social-link clicks per target
+    history: [], // [{ date, views, uniques, clicks }] oldest -> newest, excludes today
   };
 }
 
 function rollover(now) {
   if (state.day === todayKey(now)) return;
-  if (state.dayViews > 0 || state.dayUniques.size > 0) {
+  if (state.dayViews > 0 || state.dayUniques.size > 0 || Object.keys(state.dayClicks).length > 0) {
     state.history.push({
       date: state.day,
       views: state.dayViews,
       uniques: state.dayUniques.size,
+      clicks: Object.assign({}, state.dayClicks),
     });
     if (state.history.length > KEEP_DAYS) state.history = state.history.slice(-KEEP_DAYS);
   }
   state.day = todayKey(now);
   state.dayViews = 0;
   state.dayUniques = new Set();
+  state.dayClicks = {};
 }
 
 async function loadPersisted() {
@@ -54,14 +58,16 @@ async function loadPersisted() {
     const a = content && content.analytics;
     if (!a || typeof a !== 'object') return;
     state.totalViews = Number(a.totalViews) || 0;
+    state.clicks = (a.clicks && typeof a.clicks === 'object') ? a.clicks : {};
+    const today = todayKey(new Date());
     if (Array.isArray(a.days)) {
       const rows = a.days.filter(d => d && d.date && Number.isFinite(Number(d.views)));
       const sorted = rows.slice(-KEEP_DAYS);
-      const today = todayKey(new Date());
       const last = sorted[sorted.length - 1];
       if (last && last.date === today) {
         state.dayViews = Number(last.views) || 0;
         state.dayUniques = new Set(Array.isArray(last.uniques) ? last.uniques : []);
+        state.dayClicks = (last.clicks && typeof last.clicks === 'object') ? last.clicks : {};
         state.history = sorted.slice(0, -1);
       } else {
         state.history = sorted;
@@ -79,10 +85,12 @@ async function persist() {
     const content = await dbModule.getContent();
     content.analytics = {
       totalViews: state.totalViews,
+      clicks: Object.assign({}, state.clicks),
       days: state.history.concat([{
         date: state.day,
         views: state.dayViews,
         uniques: Array.from(state.dayUniques),
+        clicks: Object.assign({}, state.dayClicks),
       }]).slice(-KEEP_DAYS),
     };
     await dbModule.saveContent(content);
@@ -116,6 +124,15 @@ function isPage(req) {
   return true;
 }
 
+// Count a social-link click (target is a known alias like 'twitter', 'telegram'...)
+function trackClick(target) {
+  if (!state) initState();
+  const now = new Date();
+  rollover(now);
+  state.clicks[target] = (state.clicks[target] || 0) + 1;
+  state.dayClicks[target] = (state.dayClicks[target] || 0) + 1;
+}
+
 // Last N daily records (including today, oldest -> newest by calendar date).
 function history(days = 7) {
   if (!state) initState();
@@ -125,6 +142,7 @@ function history(days = 7) {
     date: state.day,
     views: state.dayViews,
     uniques: state.dayUniques.size,
+    clicks: Object.assign({}, state.dayClicks),
   }]).slice(-days);
 }
 
@@ -136,6 +154,8 @@ function getStats() {
     todayViews: state.dayViews,
     todayUniques: state.dayUniques.size,
     history: seven,
+    clicks: Object.assign({}, state.clicks),
+    clicksToday: Object.assign({}, state.dayClicks),
     hourKey: hourKey(new Date()),
   };
 }
@@ -150,4 +170,4 @@ function start() {
   });
 }
 
-module.exports = { trackVisit, isPage, getStats, start, persist };
+module.exports = { trackVisit, trackClick, isPage, getStats, start, persist };
