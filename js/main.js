@@ -376,8 +376,8 @@
         window.__cryptoLiveRates = {};
 
         // Fallback rates for the region-aware calculator until the server proxy responds
-        var CURRENCY_NAMES = { USDT: 'USDT', BTC: 'Bitcoin (BTC)', ETH: 'Ethereum (ETH)', USD: 'دولار أمريكي', YER: 'ريال يمني', SAR: 'ريال سعودي', OMR: 'ريال عماني', KWD: 'دينار كويتي', AED: 'درهم إماراتي', EUR: 'يورو', TRY: 'ليرة تركية', CNY: 'يوان صيني' };
-        var FALLBACK_USD_VALUE = { USD: 1, SAR: 1 / 3.75, AED: 1 / 3.6725, KWD: 3.26, OMR: 2.6, EUR: 1.09, TRY: 0.021, CNY: 0.147 };
+        var CURRENCY_NAMES = { USDT: 'USDT', BTC: 'Bitcoin (BTC)', ETH: 'Ethereum (ETH)', USD: 'دولار أمريكي', YER: 'ريال يمني', SAR: 'ريال سعودي', OMR: 'ريال عماني', KWD: 'دينار كويتي', AED: 'درهم إماراتي', EUR: 'يورو', TRY: 'ليرة تركية', CNY: 'يوان صيني', EGP: 'جنيه مصري', JOD: 'دينار أردني' };
+        var FALLBACK_USD_VALUE = { USD: 1, SAR: 1 / 3.75, AED: 1 / 3.6725, KWD: 3.26, OMR: 2.6, EUR: 1.09, TRY: 0.021, CNY: 0.147, EGP: 1 / 48, JOD: 1 / 0.709 };
         var DEFAULT_REGION_USD = { sanaa: { buy: 533, sell: 536 }, aden: { buy: 1554, sell: 1562 } };
 
         function buildFallbackYer() {

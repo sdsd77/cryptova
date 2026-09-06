@@ -4,7 +4,7 @@
    Sources (priority order):
      1) naqdilive.com  -> local buy/sell per region (Sanaa & Aden) for:
         USD, SAR, AED, OMR, KWD, EUR
-     2) open.er-api.com -> international USD mid-rates, derive TRY & CNY
+     2) open.er-api.com -> international USD mid-rates, derive TRY, CNY, EGP & JOD
         (and any missing local currency) by scaling the local USD rate
      3) Stored persisted values, then built-in constants
 
@@ -28,10 +28,12 @@ const CURRENCIES = {
   eur: { name: 'يورو', usdValue: 1.09 },
   try: { name: 'ليرة تركية', usdValue: 1 / 48 },
   cny: { name: 'يوان صيني', usdValue: 1 / 6.8 },
+  egp: { name: 'جنيه مصري', usdValue: 1 / 48 },
+  jod: { name: 'دينار أردني', usdValue: 1 / 0.709 },
 };
 
 const LOCAL_SOURCE_CODES = ['usd', 'sar', 'aed', 'omr', 'kwd', 'eur'];
-const INTL_SOURCE_CODES = ['try', 'cny'];
+const INTL_SOURCE_CODES = ['try', 'cny', 'egp', 'jod'];
 
 const NAME_MAP = {
   'دولار أمريكي': 'usd',
@@ -40,6 +42,8 @@ const NAME_MAP = {
   'ريال عماني': 'omr',
   'دينار كويتي': 'kwd',
   'يورو': 'eur',
+  'جنيه مصري': 'egp',
+  'دينار أردني': 'jod',
 };
 
 const DEFAULT_USD = {
