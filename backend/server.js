@@ -182,8 +182,14 @@ app.get(['/', '/index.html'], (req, res) => {
 
 // === Secret page routes (unguessable tokens, no /pages/ or .html exposure) ===
 // The dashboard lives ONLY behind the ADMIN_PATH token (configurable via .env).
+// normalizePath ensures the value always starts with "/" (env may omit it).
+function normalizePath(p, fallback) {
+    const v = String(p || '').trim().replace(/\/+$/, '');
+    const base = v || fallback;
+    return base.charAt(0) === '/' ? base : '/' + base;
+}
 const SECRET_PATHS = {
-    admin:   process.env.ADMIN_PATH || '/control-7hIphN4syS_u',
+    admin:   normalizePath(process.env.ADMIN_PATH, '/control-7hIphN4syS_u'),
     digital: '/svc-lI_e2m2Zgoqo',
     tech:    '/tech-Y-6Ob_UUKZ9g',
     pricing: '/price-uaLfoLjpibrD',
