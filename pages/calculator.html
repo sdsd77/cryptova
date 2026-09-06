@@ -240,7 +240,7 @@
     <a href="https://wa.me/967785628409" target="_blank" class="whatsapp-float"><i class="fab fa-whatsapp"></i></a>
     <button class="scroll-top"><i class="fas fa-chevron-up"></i></button>
 
-    <script src="../js/main.js?v=5"></script>
+    <script src="../js/main.js?v=6"></script>
     <script>
         (function() {
             var form = document.getElementById('cryptoCalcForm');
@@ -365,6 +365,7 @@
             // Update rate table when live prices arrive (main.js replaces __cryptoYerRates)
             setInterval(function() {
                 renderRatesTable();
+                if (calcApi && calcApi.updateCalcRateNote) calcApi.updateCalcRateNote();
             }, 2000);
 
             // Keep the unit rate fresh on every calculation

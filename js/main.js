@@ -447,6 +447,7 @@
             convertCurrency: convertCurrency,
             formatCalcResult: formatCalcResult,
             getCalculationRegion: getCalculationRegion,
+            updateCalcRateNote: updateCalcRateNote,
             CURRENCY_NAMES: CURRENCY_NAMES,
         };
 
