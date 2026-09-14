@@ -507,7 +507,7 @@ app.post('/api/contact', rateLimit, async (req, res) => {
                             ${escHtml(message)}
                         </div>
                         <hr style="border-color: #ddd;">
-                        <p style="color: #999; font-size: 12px;">تم الإرسال من نموذج الاتصال في موقع Cryptova</p>
+                        <p style="color: #999; font-size: 12px;">تم الإرسال من نموذج الاتصال في موقع SHIFT_YE</p>
                     </div>
                 `,
             });

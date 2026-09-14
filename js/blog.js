@@ -256,7 +256,7 @@
                 document.getElementById('postTitle').textContent = post.title;
                 document.getElementById('postDate').textContent = formatDate(post.date);
                 document.getElementById('postReadTime').textContent = post.readTime + ' دقائق قراءة';
-                document.getElementById('postSource').textContent = post.source || 'Cryptova';
+                document.getElementById('postSource').textContent = post.source || 'SHIFT_YE';
                 document.getElementById('postBodyContent').textContent = post.content || post.excerpt || '';
 
                 // Hero image
@@ -279,7 +279,7 @@
                 }
 
                 // Update page title
-                document.title = post.title + ' | Cryptova';
+                document.title = post.title + ' | SHIFT_YE';
 
                 // Load related posts
                 loadRelatedPosts(post);

@@ -417,7 +417,7 @@
   ],
   "exchangeRates": {
     "source": "auto",
-    "updatedAt": "2026-09-06T03:40:52.363Z",
+    "updatedAt": "2026-09-06T05:21:44.694Z",
     "sanaa": {
       "usd": {
         "buy": 530,
@@ -450,6 +450,14 @@
       "cny": {
         "buy": 78.7,
         "sell": 79.44
+      },
+      "egp": {
+        "buy": 10.4,
+        "sell": 10.5
+      },
+      "jod": {
+        "buy": 747.53,
+        "sell": 754.58
       }
     },
     "aden": {
@@ -484,7 +492,27 @@
       "cny": {
         "buy": 230.61,
         "sell": 232.39
+      },
+      "egp": {
+        "buy": 30.48,
+        "sell": 30.72
+      },
+      "jod": {
+        "buy": 2190.41,
+        "sell": 2207.33
       }
     }
+  },
+  "analytics": {
+    "totalViews": 0,
+    "clicks": {},
+    "days": [
+      {
+        "date": "2026-09-06",
+        "views": 0,
+        "uniques": [],
+        "clicks": {}
+      }
+    ]
   }
 }

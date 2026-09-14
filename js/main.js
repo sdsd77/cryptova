@@ -284,7 +284,7 @@
                 var service = (data.service || '').trim();
                 var msg = (data.message || '').trim();
 
-                var subject = 'رسالة جديدة من موقع Cryptova';
+                var subject = 'رسالة جديدة من موقع SHIFT_YE';
                 if (name) {
                     subject += ' - ' + name;
                 }
