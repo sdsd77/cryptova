@@ -212,9 +212,33 @@ if (process.env.LOG_REQUESTS === '1') {
         next();
     });
 }
+// === Same-origin guard for static assets ===
+// The site's HTML loads css/js/images with a same-origin Referer header, so those
+// requests pass. Directly typing a file URL in the address bar (no Referer) — or
+// hotlinking from another site — is redirected to the homepage, so the project's
+// source files can never be read by opening them directly.
+function isSameOrigin(req) {
+    const referer = req.headers.referer || req.headers.referrer || '';
+    if (!referer) return false;
+    try {
+        const url = new URL(referer);
+        const hostHeader = req.headers.host || '';
+        return url.host === hostHeader;
+    } catch (err) {
+        return false;
+    }
+}
+
+function assetGuard(req, res, next) {
+    if (!isSameOrigin(req)) {
+        return res.redirect(302, '/');
+    }
+    next();
+}
+
 const PUBLIC_SUBDIRS = ['css', 'js', 'images'];
 PUBLIC_SUBDIRS.forEach((dir) => {
-    app.use('/' + dir, express.static(path.join(ROOT_DIR, dir), {
+    app.use('/' + dir, assetGuard, express.static(path.join(ROOT_DIR, dir), {
         setHeaders(res, filePath) {
             if (/\.(css|js|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|eot)$/i.test(filePath)) {
                 res.setHeader('Cache-Control', 'public, max-age=604800');
