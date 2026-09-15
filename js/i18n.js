@@ -39,8 +39,8 @@
 
         // ─── Hero ───
         'hero.lead': {
-            ar: '<span class="hero-lead-highlight">كل ما تحتاجه، في مكان واحد.</span><br>نقدم خدمات تحويل وإيداع العملات الرقمية، وتصميم وتطوير المواقع وتطبيقات الموبايل، وتصميم واجهات وتجارب المستخدم، بالإضافة إلى البطاقات الرقمية وخدمات الألعاب',
-            en: '<span class="hero-lead-highlight">Everything you need in one place.</span><br>We provide crypto transfer and deposit services, website and mobile app design and development, UI/UX design, plus digital cards and gaming services.'
+            ar: '<span class="hero-lead-highlight">كل ما تحتاجه في مكان واحد</span><br>نقدم خدمات تحويل وإيداع العملات الرقمية، وتصميم وتطوير المواقع وتطبيقات الموبايل، وتصميم واجهات وتجارب المستخدم، بالإضافة إلى البطاقات الرقمية وخدمات الألعاب',
+            en: '<span class="hero-lead-highlight">Everything you need in one place</span><br>We provide crypto transfer and deposit services, website and mobile app design and development, UI/UX design, plus digital cards and gaming services.'
         },
         'hero.explore': { ar: 'استكشف خدماتنا', en: 'Explore Our Services' },
         'hero.contact': { ar: 'تواصل معنا', en: 'Contact Us' },
