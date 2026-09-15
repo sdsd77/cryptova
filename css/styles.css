@@ -3300,7 +3300,7 @@ img {
 
 /* --- SHIFT CTA button --- */
 .btn-shift {
-  background: linear-gradient(135deg, #091213ad 0%, #9be3ee 55%, #535bd7 100%);
+  background: linear-gradient(135deg, #052022 0%, #9be3ee 55%, #126679 100%);
   color: var(--primary-dark);
   box-shadow: 0 4px 20px rgba(34, 211, 238, 0.3);
 }
@@ -3403,8 +3403,8 @@ img {
   letter-spacing: 2px;
   padding: 8px 18px;
   border-radius: 50px;
-  color: var(--accent-gold-light);
-  background: linear-gradient(135deg, #8fcedd 0%, #3e89953b 55%, #022e3145 100%);
+  color: #99d5dd;
+  background: linear-gradient(135deg, #10111170 0%, #c8e4e830 55%, #a9e6ea8c 100%);
   border: 1px solid rgba(34, 211, 238, 0.3);
 }
 
