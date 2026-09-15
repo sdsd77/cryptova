@@ -313,7 +313,7 @@
                 bodyLines.push('');
                 bodyLines.push(msg);
 
-                var mailtoLink = 'mailto:cryptovaye@gmail.com?subject=' +
+                var mailtoLink = 'mailto:s7ift.ye@gmail.com?subject=' +
                     encodeURIComponent(subject) + '&body=' +
                     encodeURIComponent(bodyLines.join('\r\n'));
 

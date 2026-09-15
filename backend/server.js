@@ -491,8 +491,8 @@ app.post('/api/contact', rateLimit, async (req, res) => {
                 },
             });
             await transporter.sendMail({
-                from: process.env.SMTP_USER || 'cryptovaye@gmail.com',
-                to: process.env.EMAIL_TO || 'cryptovaye@gmail.com',
+                from: process.env.SMTP_USER || 's7ift.ye@gmail.com',
+                to: process.env.EMAIL_TO || 's7ift.ye@gmail.com',
                 subject: `رسالة جديدة من ${subjectName} - ${serviceLabel}`,
                 html: `
                     <div dir="rtl" style="font-family: Cairo, Arial, sans-serif; padding: 20px;">
