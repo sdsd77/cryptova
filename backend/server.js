@@ -251,6 +251,10 @@ PUBLIC_SUBDIRS.forEach((dir) => {
 app.get(['/', '/index.html'], (req, res) => {
     res.sendFile(path.join(ROOT_DIR, 'index.html'));
 });
+// Browser-icon: served directly (no referer needed) so tabs never 302/loop
+app.get('/favicon.ico', (req, res) => {
+    res.sendFile(path.join(ROOT_DIR, 'images', 'shift-logo.jpg'));
+});
 
 // === Secret page routes (unguessable tokens, no /pages/ or .html exposure) ===
 // The dashboard lives ONLY behind the ADMIN_PATH token (configurable via .env).
@@ -549,6 +553,9 @@ app.post('/api/contact', rateLimit, async (req, res) => {
                 host: process.env.SMTP_HOST || 'smtp.gmail.com',
                 port: parseInt(process.env.SMTP_PORT || '587', 10),
                 secure: false,
+                connectionTimeout: 10000,
+                greetingTimeout: 10000,
+                socketTimeout: 15000,
                 auth: {
                     user: process.env.SMTP_USER,
                     pass: process.env.SMTP_PASS,
