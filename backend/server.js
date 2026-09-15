@@ -944,13 +944,25 @@ app.get('/api/crypto-prices', async (req, res) => {
 });
 
 // === YER Exchange Rates (auto-fetch with manual admin override) ===
-app.get('/api/exchange-rates', async (req, res) => {
-    try {
-        const rates = await exchange.getRates({ force: req.query.force === '1' });
-        res.json({ success: true, data: rates });
-    } catch (err) {
-        res.status(500).json({ success: false, message: 'خطأ في أسعار الصرف' });
+// The public GET always returns cached/auto-refreshed rates (TTL-driven).
+// Force-refresh is admin-only so unauthenticated visitors can't hammer the
+// external sources (and bypass the TTL) with repeated ?force=1 requests.
+app.get('/api/exchange-rates', (req, res) => {
+    if (req.query.force === '1') {
+        return requireAdmin(req, res, async () => {
+            try {
+                const rates = await exchange.refreshFromSource({ force: true });
+                res.json({ success: true, data: rates });
+            } catch (err) {
+                res.status(500).json({ success: false, message: 'خطأ في أسعار الصرف' });
+            }
+        });
     }
+    exchange.getRates().then((rates) => {
+        res.json({ success: true, data: rates });
+    }).catch(() => {
+        res.status(500).json({ success: false, message: 'خطأ في أسعار الصرف' });
+    });
 });
 
 app.put('/api/content/exchange', requireAdmin, async (req, res) => {

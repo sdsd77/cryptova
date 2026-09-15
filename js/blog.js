@@ -90,7 +90,7 @@
         const label = categoryLabel(post.category);
         const icon = CATEGORY_ICONS[post.category] || 'fa-newspaper';
         const gradient = GRADIENTS[index % GRADIENTS.length];
-        const imgSrc = post.image ? (/^https?:\/\//.test(post.image) ? post.image : `../images/${escapeHtml(post.image)}`) : '';
+        const imgSrc = post.image ? (/^https?:\/\//.test(post.image) ? escapeHtml(post.image) : `../images/${escapeHtml(post.image)}`) : '';
 
         let imageHtml;
         if (imgSrc) {
@@ -303,7 +303,7 @@
                 // Hero image
                 const heroImage = document.getElementById('postHeroImage');
                 if (post.image) {
-                    const imgSrc = /^https?:\/\//.test(post.image) ? post.image : `../images/${escapeHtml(post.image)}`;
+                    const imgSrc = /^https?:\/\//.test(post.image) ? escapeHtml(post.image) : `../images/${escapeHtml(post.image)}`;
                     heroImage.innerHTML = `<img src="${imgSrc}" alt="${escapeHtml(post.title)}" class="blog-post-hero-img" onerror="this.parentNode.innerHTML='<div class=\\'blog-post-hero-icon\\' style=\\'background:${gradient}\\'><i class=\\'fas ${icon}\\'></i></div>'">`;
                 } else {
                     heroImage.innerHTML = `<div class="blog-post-hero-icon" style="background:${gradient}"><i class="fas ${icon}"></i></div>`;
@@ -312,7 +312,7 @@
                 // Source link
                 const sourceLink = document.getElementById('postSourceLink');
                 const originalLink = document.getElementById('postOriginalLink');
-                if (post.sourceUrl) {
+                if (post.sourceUrl && /^https?:\/\//i.test(post.sourceUrl)) {
                     sourceLink.style.display = 'flex';
                     originalLink.href = post.sourceUrl;
                 } else {

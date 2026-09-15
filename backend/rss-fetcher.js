@@ -376,6 +376,8 @@ async function fetchFeed(feed) {
 
         return items.map(item => ({
             ...item,
+            // Only allow http(s) source links (rejects javascript:/data: URLs)
+            link: /^https?:\/\//i.test(item.link || '') ? item.link : '',
             source: feed.source,
             feedCategory: feed.category,
         }));
