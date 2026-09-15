@@ -921,7 +921,7 @@
 
     <script>
         // Set current date
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ar-SA', {
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ar-EG', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
@@ -975,7 +975,7 @@
 
             container.innerHTML = displayMessages.map(function(msg, i) {
                 const realIndex = messages.length - 1 - i;
-                const date = new Date(msg.date).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const date = new Date(msg.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
                 const unreadClass = !msg.read ? 'unread' : '';
                 const badgeClass = !msg.read ? 'badge-gold' : 'badge-green';
                 const badgeText = !msg.read ? 'جديد' : 'مقروءة';
@@ -1241,7 +1241,7 @@
                 return;
             }
             el.innerHTML = list.map(function (p) {
-                var date = new Date(p.date).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+                var date = new Date(p.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
                 var cat = p.category === 'tech' ? 'تقنية' : (p.category === 'crypto' ? 'رقمية' : p.category || 'عام');
                 var badge = p.isManual ? ' <span class="badge badge-gold">يدوي</span>' : '';
                 return '<div class="post-item' + (p.isManual ? ' manual' : '') + '">' +
@@ -1658,7 +1658,7 @@
 
         function exStatusHtml(data, note) {
             var src = data.source === 'manual' ? ' (تعديل يدوي — الجلب التلقائي متوقف)' : ' (جلب تلقائي)';
-            var when = data.updatedAt ? ' آخر تحديث: ' + new Date(data.updatedAt).toLocaleString('ar-SA') : '';
+            var when = data.updatedAt ? ' آخر تحديث: ' + new Date(data.updatedAt).toLocaleString('ar-EG') : '';
             return note + src + when;
         }
 

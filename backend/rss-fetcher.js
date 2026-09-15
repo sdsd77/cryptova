@@ -100,6 +100,13 @@ async function savePosts(posts) {
     return dbModule.savePosts(posts);
 }
 
+function safeISODate(value) {
+    if (!value) return null;
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString();
+}
+
 function generateSlug(title) {
     return title
         .toLowerCase()
@@ -412,7 +419,7 @@ async function fetchAllFeeds(maxPosts = 5) {
                 source: item.source,
                 sourceUrl: item.link || '',
                 image: item.image || '',
-                date: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
+                date: safeISODate(item.pubDate) || new Date().toISOString(),
                 readTime: estimateReadTime(description),
                 isManual: false,
                 importance: importance,

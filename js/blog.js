@@ -33,7 +33,7 @@
             const date = new Date(dateStr);
             if (isNaN(date.getTime())) return 'تاريخ غير محدد';
             const y = date.getFullYear();
-            return date.toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+            return date.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
         } catch (e) {
             return 'تاريخ غير محدد';
         }
