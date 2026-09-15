@@ -3496,9 +3496,18 @@ img {
 }
 
 .shift-hero-copy .hero-lead .hero-lead-highlight {
-  color: var(--accent-gold);
-  font-size: 1.45rem;
-  font-weight: 800;
+  display: block;
+  font-size: clamp(2rem, 10vw, 1rem);
+  font-weight: 100;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+  direction: ltr;
+  background: linear-gradient(135deg, #00495b 0%, #b3d0d5 55%, #0c858e 100%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  margin-bottom: 0.5px;
+  filter: drop-shadow(0 6px 24px rgba(92, 164, 174, 0.56));
 }
 
 .shift-hero-copy .hero-buttons {
