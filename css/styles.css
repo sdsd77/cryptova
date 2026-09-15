@@ -235,6 +235,7 @@ img {
 
 .navbar-brand .brand-text {
   color: var(--text-white);
+  background: linear-gradient(135deg, #000 0%, #2c808eab 55%, #000 100%);
 }
 
 .navbar-brand .brand-text .gold {
@@ -3361,18 +3362,18 @@ img {
 
 .shift-hero-copy .shift-title-main {
   display: block;
-  font-size: clamp(5rem, 10vw, 5rem);
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: 3px;
+  font-size: clamp(6rem, 10vw, 5rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: 6px;
   direction: ltr;
   background: linear-gradient(135deg, #00495b 0%, #b3d0d5 55%, #0c858e 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  margin-bottom: 50px;
-  filter: drop-shadow(0 6px 24px rgba(34, 211, 238, 0.18));
+  margin-bottom: 30px;
+  filter: drop-shadow(0 6px 24px rgba(92, 164, 174, 0.56));
 }
 
 .shift-hero-copy .hero-lead {
