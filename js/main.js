@@ -159,61 +159,6 @@
             });
         }
 
-        // === Counter Animation ===
-        var counters = document.querySelectorAll('.stat-number, .hero-stat-number');
-
-        function animateCounter(el) {
-            var target = parseInt(el.getAttribute('data-count'));
-            if (isNaN(target) || target <= 0) return;
-
-            var duration = 1800;
-            var startTime = null;
-            var startVal = 0;
-
-            function update(timestamp) {
-                if (!startTime) startTime = timestamp;
-                var progress = Math.min((timestamp - startTime) / duration, 1);
-
-                // Ease out cubic
-                var eased = 1 - Math.pow(1 - progress, 3);
-                var current = Math.floor(eased * target);
-
-                el.textContent = formatNumber(current);
-
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                } else {
-                    el.textContent = formatNumber(target);
-                }
-            }
-
-            requestAnimationFrame(update);
-        }
-
-        function formatNumber(num) {
-            if (num >= 1000) {
-                return num.toLocaleString(isEn() ? 'en-US' : 'ar-SA');
-            }
-            return num.toString();
-        }
-
-        if ('IntersectionObserver' in window && counters.length > 0) {
-            var counterObserver = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                        animateCounter(entry.target);
-                        counterObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            counters.forEach(function(counter) {
-                if (counter.getAttribute('data-count')) {
-                    counterObserver.observe(counter);
-                }
-            });
-        }
-
         // === FAQ Accordion ===
         var faqItems = document.querySelectorAll('.faq-item');
 

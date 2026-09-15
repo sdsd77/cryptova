@@ -110,12 +110,6 @@
         'svc.card.xbox': { ar: 'Xbox', en: 'Xbox' },
         'svc.card.gaming': { ar: 'بطاقات الألعاب', en: 'Gaming Cards' },
 
-        // ─── Stats ───
-        'stat.happy': { ar: 'عميل سعيد', en: 'Happy Clients' },
-        'stat.years': { ar: 'سنوات خبرة', en: 'Years of Experience' },
-        'stat.projects': { ar: 'مشروع منجز', en: 'Completed Projects' },
-        'stat.satisfaction': { ar: 'نسبة الرضا %', en: 'Satisfaction Rate %' },
-
         // ─── Advantages ───
         'adv.secure.title': { ar: 'أمان ووضوح', en: 'Secure & Clear' },
         'adv.secure.desc': { ar: 'تعاملات واضحة وإجراءات مباشرة.', en: 'Clear transactions and straightforward procedures.' },
