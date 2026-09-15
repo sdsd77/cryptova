@@ -3497,7 +3497,7 @@ img {
 
 .shift-hero-copy .hero-lead .hero-lead-highlight {
   display: block;
-  font-size: clamp(2rem, 10vw, 1rem);
+  font-size: clamp(1.3rem, 5vw, 2rem);
   font-weight: 100;
   line-height: 1.5;
   letter-spacing: 0.5px;
