@@ -139,16 +139,56 @@ function getDecodedPath(pathname) {
     }
 }
 
-app.use((req, res, next) => {
+// === URL sanitization: redirect malicious requests (XSS / JS injection / traversal)
+// === to the homepage instead of exposing content or echoing an error.
+const INJECTION_RX = /javascript\s*:|data\s*:\s*text\/(?:html|javascript)|on(?:error|click|load|mouseover|mouseenter|mouseout|mouseleave|focus|blur|change|submit|keydown|keyup|keypress|input|drag|drop|scroll|wheel|dblclick)\s*=|(?:eval|alert|prompt|confirm|document\.|window\.)\s*\(/i;
+
+function looksMalicious(req) {
     const rawPath = req.path;
     const decodedPath = getDecodedPath(rawPath);
-    const blocked = BLOCKED_PREFIXES.some((p) =>
+    const queryStr = req.originalUrl.split('?')[1] || '';
+    const decodedQuery = getDecodedPath(queryStr);
+    const pathPart = decodedPath.toLowerCase();
+    const queryPart = decodedQuery.toLowerCase();
+
+    // Angle brackets or encoded null bytes anywhere (script <script>, <svg>, etc.)
+    if (/[<>]/.test(decodedPath) || /[<>]/.test(decodedQuery)) return true;
+    // JS/HTML injection patterns in path or query
+    if (INJECTION_RX.test(decodedPath) || INJECTION_RX.test(decodedQuery)) return true;
+    // Null / control bytes
+    if (/[\x00-\x1f]/.test(decodedPath) || /[\x00-\x1f]/.test(decodedQuery)) return true;
+    // Path traversal (../ or encoded %2e%2e) — blocked on path only, not query
+    if (/\.\./.test(decodedPath) || /\.\./.test(decodedQuery)) return true;
+    // Malformed percent-encoding — treat as suspicious, never crash the app
+    try {
+        decodeURIComponent(req.originalUrl);
+    } catch (err) {
+        return true;
+    }
+    return false;
+}
+
+const SAFE_REDIRECT = (req, res, next) => {
+    if (looksMalicious(req)) {
+        return res.redirect(302, '/');
+    }
+    next();
+};
+
+app.use(SAFE_REDIRECT);
+
+function isBlocked(rawPath) {
+    const decodedPath = getDecodedPath(rawPath);
+    return BLOCKED_PREFIXES.some((p) =>
         rawPath === p ||
         rawPath.startsWith(p + '/') ||
         decodedPath === p ||
         decodedPath.startsWith(p + '/'));
-    if (blocked) {
-        return res.status(403).send('Forbidden');
+}
+
+app.use((req, res, next) => {
+    if (isBlocked(req.path)) {
+        return res.redirect(302, '/');
     }
     next();
 });
@@ -231,9 +271,9 @@ app.get(SECRET_PATHS.post + '/:slug', servePage('blog-post.html'));
 // Dashboard: only reachable via the secret token
 app.get(SECRET_PATHS.admin, (req, res) => res.sendFile(path.join(ROOT_DIR, 'dashboard', 'index.html')));
 
-// === Legacy public paths are retired: make them 404 so nothing leaks via them ===
+// === Legacy public paths are retired: silently redirect so nothing leaks via them ===
 ['/pages', '/dashboard'].forEach((legacy) => {
-    app.use(legacy, (req, res) => res.status(404).end());
+    app.use(legacy, (req, res) => res.redirect(302, '/'));
 });
 
 // === Simple in-memory rate limiter ===
@@ -962,12 +1002,10 @@ app.use('/api', (req, res) => {
     res.status(404).json({ success: false, message: 'الرابط غير موجود' });
 });
 
-// === Catch-all: serve index.html for SPA deep links only ===
+// === Catch-all: unknown routes & sensitive/lookup-like file paths redirect home.
+// === No 404 pages are served — anything unrecognized goes back to the homepage.
 app.get('*', (req, res) => {
-    if (/\.(js|css|png|jpe?g|gif|svg|webp|ico|json|html|txt|map|woff2?|ttf|eot|pdf|zip|gz|xml|env)$/i.test(req.path)) {
-        return res.status(404).send('Not Found');
-    }
-    res.sendFile(path.join(__dirname, '..', 'index.html'));
+    res.redirect(302, '/');
 });
 
 // === Error handlers (no stack leaks) ===
