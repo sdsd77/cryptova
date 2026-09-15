@@ -3385,6 +3385,12 @@ img {
   margin-bottom: 40px;
 }
 
+.shift-hero-copy .hero-lead .hero-lead-highlight {
+  color: var(--accent-gold);
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
 .shift-hero-copy .hero-buttons {
   margin-bottom: 0;
   justify-content: flex-start;
