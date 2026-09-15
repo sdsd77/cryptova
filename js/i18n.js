@@ -413,9 +413,6 @@
         'svcp.tech.wh_title_part1': { ar: 'رحلتك معنا', en: 'Your Journey' },
         'svcp.tech.wh_title_part2': { ar: 'في 4 خطوات', en: 'in 4 Steps' },
     };
-        'svcp.crypto.cta': { ar: 'تواصل معنا لبدء معاملتك', en: 'Contact us to start your transaction' },
-        'svcp.tech.cta': { ar: 'تواصل معنا لبدء معاملتك', en: 'Contact us to start your transaction' },
-    };
 
     var DEFAULT_DIRS = { ar: 'rtl', en: 'ltr' };
 
