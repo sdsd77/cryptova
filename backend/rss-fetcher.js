@@ -229,6 +229,53 @@ function scoreImportance(title, description) {
 
 // Cache translations to avoid re-calling the service for identical text
 const translationCache = new Map();
+async function translateGoogle(text, targetLang) {
+    const url = 'https://translate.googleapis.com/translate_a/single' +
+        '?client=gtx&sl=auto&tl=' + encodeURIComponent(targetLang) +
+        '&dt=t&q=' + encodeURIComponent(text);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        let result = '';
+        const segments = data && data[0] ? data[0] : [];
+        for (const seg of segments) {
+            if (seg && seg[0]) result += seg[0];
+        }
+        return result || text;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+async function translateMyMemory(text, targetLang) {
+    const pair = targetLang === 'ar' ? 'en|ar' : 'en|' + targetLang;
+    const url = 'https://api.mymemory.translated.net/get?q=' +
+        encodeURIComponent(text.slice(0, 500)) + '&langpair=' + pair;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        const result = data && data.responseData && data.responseData.translatedText;
+        if (result && data.responseStatus && Number(data.responseStatus) === 200) {
+            return result;
+        }
+        throw new Error('No translation');
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+function isProbablyArabic(text) {
+    if (!text) return false;
+    const arabicCount = (text.match(/[\u0600-\u06FF]/g) || []).length;
+    return arabicCount / text.length > 0.3;
+}
+
 async function translateText(text, targetLang) {
     try {
         const cacheKey = text + '|' + targetLang;
@@ -236,25 +283,20 @@ async function translateText(text, targetLang) {
             return translationCache.get(cacheKey);
         }
 
-        const url = 'https://translate.googleapis.com/translate_a/single' +
-            '?client=gtx&sl=auto&tl=' + encodeURIComponent(targetLang) +
-            '&dt=t&q=' + encodeURIComponent(text);
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 15000);
-        const response = await fetch(url, { signal: controller.signal });
-        clearTimeout(timer);
-
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const data = await response.json();
-
-        let result = '';
-        const segments = data && data[0] ? data[0] : [];
-        for (const seg of segments) {
-            if (seg && seg[0]) result += seg[0];
+        let result = null;
+        // Try Google first, then retry, then fall back to MyMemory
+        for (const attempt of [translateGoogle, translateGoogle, translateMyMemory]) {
+            try {
+                result = await attempt(text, targetLang);
+                if (result && result !== text) break;
+            } catch (err) {
+                console.error(`  Translation attempt failed: ${err.message}`);
+                result = null;
+            }
         }
 
-        const final = result || text;
-        translationCache.set(cacheKey, final);
+        const final = result && !isProbablyArabic(text) ? result : null;
+        if (final) translationCache.set(cacheKey, final);
         return final;
     } catch (err) {
         console.error(`Translation failed for "${text.slice(0, 40)}...": ${err.message}`);
@@ -394,13 +436,18 @@ async function fetchAllFeeds(maxPosts = 5) {
         let title = await translateText(item.title, 'ar');
         let description = await translateText(item.description || item.title, 'ar');
 
-        // Fallback: if translation failed, strip HTML of English text
-        if (!title || title === item.title) {
-            const plain = (item.title || '').replace(/<[^>]*>/g, '').trim();
-            title = title || plain;
+        // If the source was English and the translation didn't return Arabic,
+        // treat it as failed (don't publish English titles on an Arabic site).
+        const sourceIsArabic = isProbablyArabic(item.title);
+        if (!sourceIsArabic && !isProbablyArabic(title)) {
+            title = null;
         }
-        if (!description) {
-            description = item.description || title;
+        if (!sourceIsArabic && !isProbablyArabic(description)) {
+            description = title;
+        }
+        if (sourceIsArabic && (!title || title.length < 10)) {
+            title = item.title;
+            description = description || title;
         }
 
         if (!title || title.length < 10) continue;
