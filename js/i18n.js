@@ -39,8 +39,8 @@
 
         // ─── Hero ───
         'hero.lead': {
-            ar: 'حلول رقمية متكاملة تجمع خدمات العملات الرقمية، تطوير المواقع والتطبيقات، تصميم تجربة المستخدم والبطاقات الرقمية في مكان واحد.',
-            en: 'Integrated digital solutions bringing crypto services, website and app development, UX design and digital cards together in one place.'
+            ar: 'كل ما تحتاجه، في مكان واحد. نقدم خدمات تحويل وإيداع العملات الرقمية، وتصميم وتطوير المواقع وتطبيقات الموبايل، وتصميم واجهات وتجارب المستخدم، بالإضافة إلى البطاقات الرقمية وخدمات الألعاب',
+            en: 'Everything you need in one place. We provide crypto transfer and deposit services, website and mobile app design and development, UI/UX design, plus digital cards and gaming services.'
         },
         'hero.explore': { ar: 'استكشف خدماتنا', en: 'Explore Our Services' },
         'hero.contact': { ar: 'تواصل معنا', en: 'Contact Us' },
