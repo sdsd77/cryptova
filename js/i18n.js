@@ -95,6 +95,21 @@
         'svc.request': { ar: 'اطلب الخدمة', en: 'Request Service' },
         'svc.order': { ar: 'طلب الباقة', en: 'Order Package' },
 
+        // ─── Home services categories ───
+        'svc.cat.crypto': { ar: 'العملات الرقمية', en: 'Digital Currency' },
+        'svc.cat.tech': { ar: 'التطوير والتقنية', en: 'Development & Tech' },
+        'svc.cat.design': { ar: 'التصميم', en: 'Design' },
+        'svc.cat.cards': { ar: 'البطاقات الرقمية', en: 'Digital Cards' },
+        'svc.websites.title': { ar: 'تطوير المواقع', en: 'Website Development' },
+        'svc.apps.title': { ar: 'تطوير التطبيقات', en: 'App Development' },
+        'svc.uiux.name': { ar: 'UI/UX', en: 'UI/UX' },
+        'svc.uxdesign.title': { ar: 'تصميم الواجهات والتجارب', en: 'UI/UX Experience Design' },
+        'svc.card.itunes': { ar: 'iTunes', en: 'iTunes' },
+        'svc.card.gplay': { ar: 'Google Play', en: 'Google Play' },
+        'svc.card.playstation': { ar: 'PlayStation', en: 'PlayStation' },
+        'svc.card.xbox': { ar: 'Xbox', en: 'Xbox' },
+        'svc.card.gaming': { ar: 'بطاقات الألعاب', en: 'Gaming Cards' },
+
         // ─── Stats ───
         'stat.happy': { ar: 'عميل سعيد', en: 'Happy Clients' },
         'stat.years': { ar: 'سنوات خبرة', en: 'Years of Experience' },
