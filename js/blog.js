@@ -7,12 +7,25 @@
 (function () {
     'use strict';
 
+    function tr(key, fallback) {
+        try { return (window.I18N && window.I18N.t) ? window.I18N.t(key) : (fallback || key); } catch (e) { return fallback || key; }
+    }
+
+    function isEn() {
+        try { return window.I18N && window.I18N.getLang() === 'en'; } catch (e) { return false; }
+    }
+
     const CATEGORY_LABELS = {
         crypto: 'العملات الرقمية',
         tech: 'التقنية',
         tips: 'نصائح',
         news: 'أخبار السوق',
     };
+
+    function categoryLabel(category) {
+        const key = 'blog.filter.' + (category || 'general');
+        return tr(key, CATEGORY_LABELS[category] || 'عام');
+    }
 
     const CATEGORY_ICONS = {
         crypto: 'fa-coins',
@@ -31,28 +44,35 @@
     function formatDate(dateStr) {
         try {
             const date = new Date(dateStr);
-            if (isNaN(date.getTime())) return 'تاريخ غير محدد';
-            return date.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+            if (isNaN(date.getTime())) return tr('blog.date_unknown', 'تاريخ غير محدد');
+            const locale = isEn() ? 'en-US' : 'ar-EG';
+            return date.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
         } catch (e) {
-            return 'تاريخ غير محدد';
+            return tr('blog.date_unknown', 'تاريخ غير محدد');
         }
     }
 
     function timeAgo(dateStr) {
         try {
             const date = new Date(dateStr);
-            if (isNaN(date.getTime())) return 'تاريخ غير محدد';
+            if (isNaN(date.getTime())) return tr('blog.date_unknown', 'تاريخ غير محدد');
             const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-            if (seconds < 60) return 'الآن';
+            if (seconds < 60) return tr('blog.time.now', 'الآن');
+            const fmt = isEn()
+                ? function (n, unit) { return n + ' ' + unit + (n === 1 ? '' : 's') + ' ago'; }
+                : function (n, unit) {
+                    const arabicPlural = { minute: ['دقيقة', 'دقيقتين', 'دقائق'], hour: ['ساعة', 'ساعتين', 'ساعات'], day: ['يوم', 'يومين', 'أيام'] }[unit];
+                    return 'قبل ' + n + ' ' + (n === 1 ? arabicPlural[0] : n === 2 ? arabicPlural[1] : n <= 10 ? arabicPlural[2] : arabicPlural[0]);
+                };
             const minutes = Math.floor(seconds / 60);
-            if (minutes < 60) return 'قبل ' + minutes + (minutes === 1 ? ' دقيقة' : minutes === 2 ? ' دقيقتين' : minutes <= 10 ? ' دقائق' : ' دقيقة');
+            if (minutes < 60) return fmt(minutes, 'minute');
             const hours = Math.floor(minutes / 60);
-            if (hours < 24) return 'قبل ' + hours + (hours === 1 ? ' ساعة' : hours === 2 ? ' ساعتين' : hours <= 10 ? ' ساعات' : ' ساعة');
+            if (hours < 24) return fmt(hours, 'hour');
             const days = Math.floor(hours / 24);
-            if (days < 30) return 'قبل ' + days + (days === 1 ? ' يوم' : days === 2 ? ' يومين' : days <= 10 ? ' أيام' : ' يوم');
+            if (days < 30) return fmt(days, 'day');
             return formatDate(dateStr);
         } catch (e) {
-            return 'تاريخ غير محدد';
+            return tr('blog.date_unknown', 'تاريخ غير محدد');
         }
     }
 
@@ -67,7 +87,7 @@
     }
 
     function buildCard(post, index) {
-        const label = CATEGORY_LABELS[post.category] || 'عام';
+        const label = categoryLabel(post.category);
         const icon = CATEGORY_ICONS[post.category] || 'fa-newspaper';
         const gradient = GRADIENTS[index % GRADIENTS.length];
         const imgSrc = post.image ? (/^https?:\/\//.test(post.image) ? post.image : `../images/${escapeHtml(post.image)}`) : '';
@@ -84,13 +104,13 @@
                 ${imageHtml}
                 <div class="blog-content">
                     <div class="blog-meta">
-                        <span class="blog-tag">${label}</span>
+                        <span class="blog-tag" data-i18n-text="blog.filter.${post.category}">${label}</span>
                         <span><i class="far fa-calendar"></i> ${formatDate(post.date)}</span>
-                        <span><i class="far fa-clock"></i> ${timeAgo(post.date)}</span>
+                        <span class="blog-time-ago"><i class="far fa-clock"></i> ${timeAgo(post.date)}</span>
                     </div>
                     <h3>${escapeHtml(post.title)}</h3>
                     <p>${escapeHtml(post.excerpt)}</p>
-                    <a href="/post-Jy7vgl0_4QjK/${encodeURIComponent(post.slug)}" class="service-link">اقرأ المزيد <i class="fas fa-arrow-left"></i></a>
+                    <a href="/post-Jy7vgl0_4QjK/${encodeURIComponent(post.slug)}" class="service-link" data-i18n-text="svc.readMore">${tr('svc.readMore')} <i class="fas fa-arrow-left"></i></a>
                 </div>
             </div>`;
     }
@@ -197,7 +217,7 @@
                 })
                 .catch(function () {
                     loading.style.display = 'none';
-                    grid.innerHTML = '<div class="post-loading"><p>تعذر تحميل المقالات. يرجى المحاولة لاحقاً.</p></div>';
+                    grid.innerHTML = '<div class="post-loading"><p>' + tr('blog.err') + '</p></div>';
                     if (pagination) pagination.style.display = 'none';
                 });
         }
@@ -214,6 +234,10 @@
         });
 
         loadPosts();
+
+        document.addEventListener('shift:i18n', function () {
+            loadPosts();
+        });
 
         // On visit, ask server to refresh from sources if enough time has passed.
         // Silent (non-blocking) so the page always shows existing articles quickly.
@@ -265,7 +289,7 @@
 
                 content.style.display = 'block';
 
-                const label = CATEGORY_LABELS[post.category] || 'عام';
+                const label = categoryLabel(post.category);
                 const icon = CATEGORY_ICONS[post.category] || 'fa-newspaper';
                 const gradient = GRADIENTS[0];
 

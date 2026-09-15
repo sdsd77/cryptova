@@ -11,6 +11,10 @@
         });
     }
 
+    function tr(key) {
+        try { return (window.I18N && window.I18N.t) ? window.I18N.t(key) : key; } catch (e) { return key; }
+    }
+
     async function getJSON(url) {
         const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
         if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -39,11 +43,12 @@
                         '<p>' + esc(s.description || '') + '</p>' +
                         '<ul class="service-detail-features">' + features + '</ul>' +
                         '<div class="service-cta">' +
-                        '<a href="/contact-Rb1jI0TUQy-s" class="btn btn-gold btn-sm"><i class="fas fa-paper-plane"></i> اطلب الخدمة</a>' +
+                        '<a href="/contact-Rb1jI0TUQy-s" class="btn btn-gold btn-sm" data-i18n-text="svc.request"><i class="fas fa-paper-plane"></i> ' + tr('svc.request') + '</a>' +
                         '</div>' +
                         '</div>';
                 }).join('');
             if (window.AosInit) window.AosInit(container.querySelectorAll('[data-aos]'));
+            if (window.I18N) window.I18N.applyToNode(container);
         } catch (e) {
             console.error('Failed to render services:', e);
         }
@@ -58,14 +63,15 @@
             const rates = pricing.cryptoRates || [];
             container.innerHTML = rates.map(function (r) {
                 return '<tr>' +
-                    '<td data-label="العملة"><div class="crypto-name"><div class="crypto-icon" style="background:' + esc(r.color) + '20;color:' + esc(r.color) + '">' + esc(r.symbol) + '</div><div><strong>' + esc(r.currency) + '</strong><br><span style="color:var(--text-muted);font-size:0.85rem">' + esc(r.fullName) + '</span></div></div></td>' +
-                    '<td data-label="الحد الأدنى">' + esc(r.min) + '</td>' +
-                    '<td data-label="نسبة العمولة">' + esc(r.fee) + '</td>' +
-                    '<td data-label="سرعة التنفيذ">' + esc(r.speed) + '</td>' +
-                    '<td data-label="إجراء"><a href="/contact-Rb1jI0TUQy-s" class="btn btn-gold btn-sm">ابدأ الآن</a></td>' +
+                    '<td data-label="' + tr('tbl.currency') + '"><div class="crypto-name"><div class="crypto-icon" style="background:' + esc(r.color) + '20;color:' + esc(r.color) + '">' + esc(r.symbol) + '</div><div><strong>' + esc(r.currency) + '</strong><br><span style="color:var(--text-muted);font-size:0.85rem">' + esc(r.fullName) + '</span></div></div></td>' +
+                    '<td data-label="' + tr('tbl.min') + '">' + esc(r.min) + '</td>' +
+                    '<td data-label="' + tr('tbl.fee') + '">' + esc(r.fee) + '</td>' +
+                    '<td data-label="' + tr('tbl.speed') + '">' + esc(r.speed) + '</td>' +
+                    '<td data-label="' + tr('tbl.action') + '"><a href="/contact-Rb1jI0TUQy-s" class="btn btn-gold btn-sm" data-i18n-text="nav.cta">' + tr('nav.cta') + '</a></td>' +
                     '</tr>';
             }).join('');
             if (window.AosInit) window.AosInit(container.querySelectorAll('[data-aos]'));
+            if (window.I18N) window.I18N.applyToNode(container);
         } catch (e) {
             console.error('Failed to render rates:', e);
         }
@@ -90,10 +96,11 @@
                     '<p style="color: var(--text-muted); font-size: 0.9rem;">' + esc(p.subtitle || '') + '</p>' +
                     '<div class="price">' + esc(p.price) + ' <small>' + esc(p.priceNote || '') + '</small></div>' +
                     '<ul class="pricing-features">' + features + '</ul>' +
-                    '<a href="/contact-Rb1jI0TUQy-s" class="' + btnClass + '" style="width: 100%;">طلب الباقة</a>' +
+                    '<a href="/contact-Rb1jI0TUQy-s" class="' + btnClass + '" style="width: 100%;" data-i18n-text="svc.order">' + tr('svc.order') + '</a>' +
                     '</div>';
             }).join('');
             if (window.AosInit) window.AosInit(container.querySelectorAll('[data-aos]'));
+            if (window.I18N) window.I18N.applyToNode(container);
         } catch (e) {
             console.error('Failed to render packages:', e);
         }

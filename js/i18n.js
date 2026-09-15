@@ -24,6 +24,7 @@
         'nav.faq': { ar: 'الأسئلة الشائعة', en: 'FAQ' },
         'nav.contact': { ar: 'تواصل معنا', en: 'Contact Us' },
         'nav.cta': { ar: 'ابدأ الآن', en: 'Start Now' },
+        'nav.brand_html': { ar: 'SHIFT<span class="gold">_YE</span>', en: 'SHIFT<span class="gold">_YE</span>' },
         'nav_menu': { ar: 'القائمة', en: 'Menu' },
         'nav.top': { ar: 'العودة للأعلى', en: 'Back to top' },
         'social.facebook': { ar: 'فيسبوك', en: 'Facebook' },
@@ -137,6 +138,7 @@
         'cta.subscribe_sub': { ar: 'احصل على آخر الأخبار والمقالات مباشرة في بريدك', en: 'Get the latest news and articles straight to your inbox.' },
         'cta.subscribe_btn': { ar: 'اشترك', en: 'Subscribe' },
         'cta.subscribe_ph': { ar: 'أدخل بريدك الإلكتروني', en: 'Enter your email' },
+        'cta.subscribe_done': { ar: 'تم الاشتراك بنجاح!', en: 'Subscribed successfully!' },
 
         // ─── Footer ───
         'footer.about.home': { ar: 'نقدم لك حلولاً متكاملة في عالم العملات الرقمية والتقنية.', en: 'We provide complete solutions in the world of crypto and technology.' },
@@ -297,6 +299,7 @@
         'calc.result': { ar: 'المبلغ المحول', en: 'Converted Amount' },
         'calc.market_prices': { ar: 'أسعار السوق المباشرة', en: 'Live Market Prices' },
         'calc.live': { ar: 'مباشر', en: 'Live' },
+        'calc.loading': { ar: 'جاري تحميل الأسعار', en: 'Loading rates' },
         'rate.cny': { ar: 'يوان صيني', en: 'Chinese Yuan' },
         'rate.try': { ar: 'ليرة تركية', en: 'Turkish Lira' },
         // Unit footnote line
@@ -337,6 +340,9 @@
         'blog.filter.tech': { ar: 'التقنية', en: 'Tech' },
         'blog.filter.tips': { ar: 'نصائح', en: 'Tips' },
         'blog.filter.news': { ar: 'أخبار السوق', en: 'Market News' },
+        'blog.filter.general': { ar: 'عام', en: 'General' },
+        'blog.date_unknown': { ar: 'تاريخ غير محدد', en: 'Unknown date' },
+        'blog.time.now': { ar: 'الآن', en: 'now' },
         'blog.loading': { ar: 'جاري تحميل المقالات...', en: 'Loading articles...' },
         'blog.empty': { ar: 'لا توجد مقالات في هذا التصنيف حالياً.', en: 'No articles in this category right now.' },
         'blog.err': { ar: 'تعذر تحميل المقالات. يرجى المحاولة لاحقاً.', en: 'Failed to load articles. Please try again later.' },
@@ -391,6 +397,7 @@
         'svcp.crypto.intro_badge': { ar: 'العملات الرقمية والمعاملات', en: 'Crypto & Transactions' },
         'svcp.crypto.intro_part1': { ar: 'حلول متكاملة', en: 'Complete Solutions' },
         'svcp.crypto.intro_part2': { ar: 'للمعاملات الرقمية', en: 'for Digital Transactions' },
+        'svcp.crypto.title_html': { ar: 'حلول متكاملة <span class="gold">للمعاملات الرقمية</span>', en: 'Complete Solutions <span class="gold">for Digital Transactions</span>' },
         'svcp.crypto.sub': { ar: 'نقدم مجموعة شاملة من خدمات العملات الرقمية والمعاملات المالية لتلبية جميع احتياجاتك', en: 'We offer a full range of crypto and financial services to meet all your needs.' },
         'svcp.crypto.loading': { ar: 'جاري تحميل الخدمات...', en: 'Loading services...' },
         'svcp.tech.intro_badge': { ar: 'تطوير البرمجيات والحلول التقنية', en: 'Software & Tech Solutions' },
@@ -410,10 +417,15 @@
         'svcp.proc_step4.t': { ar: 'دعم ومتابعة', en: 'Support & Follow-up' },
         'svcp.proc_step4.p': { ar: 'فريقنا متاح دائماً لمساعدتك ومتابعة معاملتك', en: 'Our team is always available to help and follow up.' },
         // ─── Tech services page: how we work (different steps) ───
+        'svcp.tech.proc_step1.t': { ar: 'تواصل معنا', en: 'Contact Us' },
+        'svcp.tech.proc2.t': { ar: 'استشارة وعرض سعر', en: 'Consultation & Quote' },
+        'svcp.tech.proc3.t': { ar: 'تطوير وتنفيذ', en: 'Development & Execution' },
+        'svcp.tech.proc4.t': { ar: 'تسليم ودعم', en: 'Delivery & Support' },
         'svcp.tech.wh_title_part1': { ar: 'رحلتك معنا', en: 'Your Journey' },
         'svcp.tech.wh_title_part2': { ar: 'في 4 خطوات', en: 'in 4 Steps' },
         'svcp.steps.step': { ar: 'خطوة', en: 'Step' },
         'footer.quick_links': { ar: 'روابط سريعة', en: 'Quick Links' },
+        'footer.contact_title': { ar: 'تواصل معنا', en: 'Contact Us' },
     };
 
     var DEFAULT_DIRS = { ar: 'rtl', en: 'ltr' };

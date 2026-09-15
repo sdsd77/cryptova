@@ -6,6 +6,14 @@
 (function() {
     'use strict';
 
+    function tr(key, fallback) {
+        try { return (window.I18N && window.I18N.t) ? window.I18N.t(key) : (fallback || key); } catch (e) { return fallback || key; }
+    }
+
+    function isEn() {
+        try { return window.I18N && window.I18N.getLang() === 'en'; } catch (e) { return false; }
+    }
+
     // === Utility Functions ===
     function throttle(fn, wait) {
         var lastTime = 0;
@@ -184,7 +192,7 @@
 
         function formatNumber(num) {
             if (num >= 1000) {
-                return num.toLocaleString('ar-SA');
+                return num.toLocaleString(isEn() ? 'en-US' : 'ar-SA');
             }
             return num.toString();
         }
@@ -275,7 +283,7 @@
                 var originalHTML = submitBtn ? submitBtn.innerHTML : '';
                 if (submitBtn) {
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تجهيز الرسالة...';
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + tr('email.sending');
                 }
 
                 var name = (data.name || '').trim();
@@ -284,23 +292,23 @@
                 var service = (data.service || '').trim();
                 var msg = (data.message || '').trim();
 
-                var subject = 'رسالة جديدة من موقع SHIFT_YE';
+                var subject = tr('email.subject');
                 if (name) {
                     subject += ' - ' + name;
                 }
 
                 var bodyLines = [];
                 if (name) {
-                    bodyLines.push('الاسم: ' + name);
+                    bodyLines.push(tr('email.name') + ' ' + name);
                 }
                 if (email) {
-                    bodyLines.push('البريد الإلكتروني: ' + email);
+                    bodyLines.push(tr('email.email') + ' ' + email);
                 }
                 if (phone) {
-                    bodyLines.push('رقم الهاتف: ' + phone);
+                    bodyLines.push(tr('email.phone') + ' ' + phone);
                 }
                 if (service) {
-                    bodyLines.push('الخدمة المطلوبة: ' + service);
+                    bodyLines.push(tr('email.service') + ' ' + service);
                 }
                 bodyLines.push('');
                 bodyLines.push(msg);
@@ -319,7 +327,7 @@
                     }).catch(function() {});
                 } catch (err) {}
 
-                showToast('تم فتح برنامج بريدك — اضغط "إرسال" هناك، ويُحفظ نسخة احتياطية من رسالتك هنا');
+                showToast(tr('email.toast'));
                 contactForm.reset();
 
                 if (submitBtn) {
@@ -341,7 +349,7 @@
                 var toCurrency = document.getElementById('calcTo').value;
 
                 if (isNaN(amount) || amount <= 0) {
-                    showToast('الرجاء إدخال مبلغ صحيح');
+                    showToast(tr('calc.invalid_amount'));
                     return;
                 }
 
@@ -349,7 +357,9 @@
 
                 var resultEl = document.getElementById('calcResult');
                 if (resultEl) {
-                    resultEl.textContent = formatCalcResult(result, toCurrency) + ' ' + (CURRENCY_NAMES[toCurrency] || toCurrency);
+                    resultEl.dataset.value = formatCalcResult(result, toCurrency);
+                    resultEl.dataset.currency = toCurrency;
+                    resultEl.textContent = resultEl.dataset.value + ' ' + getCurrencyName(toCurrency);
                 }
 
                 updateCalcRateNote();
@@ -377,6 +387,15 @@
 
         // Fallback rates for the region-aware calculator until the server proxy responds
         var CURRENCY_NAMES = { USDT: 'USDT', BTC: 'Bitcoin (BTC)', ETH: 'Ethereum (ETH)', USD: 'دولار أمريكي', YER: 'ريال يمني', SAR: 'ريال سعودي', OMR: 'ريال عماني', KWD: 'دينار كويتي', AED: 'درهم إماراتي', EUR: 'يورو', TRY: 'ليرة تركية', CNY: 'يوان صيني', EGP: 'جنيه مصري', JOD: 'دينار أردني' };
+        var CURRENCY_NAME_KEYS = { USD: 'calc.usd', YER: 'calc.yer', SAR: 'calc.sar', OMR: 'calc.omr', KWD: 'calc.kwd', AED: 'calc.aed', EUR: 'calc.eur', TRY: 'calc.try', CNY: 'calc.cny', EGP: 'calc.egp', JOD: 'calc.jod' };
+        function getCurrencyName(code) {
+            var key = CURRENCY_NAME_KEYS[code];
+            if (key) {
+                var v = tr(key, CURRENCY_NAMES[code]);
+                if (v && v !== key) return v;
+            }
+            return CURRENCY_NAMES[code] || code;
+        }
         var FALLBACK_USD_VALUE = { USD: 1, SAR: 1 / 3.75, AED: 1 / 3.6725, KWD: 3.26, OMR: 2.6, EUR: 1.09, TRY: 0.021, CNY: 0.147, EGP: 1 / 48, JOD: 1 / 0.709 };
         var DEFAULT_REGION_USD = { sanaa: { buy: 533, sell: 536 }, aden: { buy: 1554, sell: 1562 } };
 
@@ -485,7 +504,7 @@
                     '<td class="' + (up ? 'price-up' : 'price-down') + '">' +
                         '<i class="fas fa-caret-' + (up ? 'up' : 'down') + '"></i> ' + formatChange(change) +
                     '</td>' +
-                    '<td><a href="' + '/contact-Rb1jI0TUQy-s' + '" class="btn btn-gold btn-sm">اشترِ الآن</a></td>' +
+                    '<td><a href="' + '/contact-Rb1jI0TUQy-s' + '" class="btn btn-gold btn-sm" data-i18n-text="prices.buy_now">' + tr('prices.buy_now') + '</a></td>' +
                 '</tr>';
             }).join('');
             cryptoPricesTable.innerHTML = html;
@@ -550,11 +569,11 @@
             var regionRates = (yer[region] && typeof yer[region] === 'object') ? yer[region] : (yer.sanaa || {});
             var r = regionRates.usd || DEFAULT_REGION_USD[region] || DEFAULT_REGION_USD.sanaa;
             if (r && r.buy && r.sell) {
-                var label = (region === 'aden') ? 'عدن والمحافظات الجنوبية' : 'صنعاء والمحافظات الشمالية';
-                var tag = yer.__manual ? ' — تعديل يدوي' : (yer.__live ? ' — سعر السوق' : ' — سعر تقريبي');
-                note.textContent = label + ' · دولار ' + r.buy + '/' + r.sell + tag;
+                var label = (region === 'aden') ? tr('rate.aden_area') : tr('rate.sanaa_area');
+                var tag = yer.__manual ? ' — ' + tr('rate.manual') : (yer.__live ? ' — ' + tr('rate.live') : ' — ' + tr('rate.approx'));
+                note.textContent = label + ' · ' + tr('rate.usd_of') + ' ' + r.buy + '/' + r.sell + tag;
             } else {
-                note.textContent = 'جاري تحميل سعر الصرف...';
+                note.textContent = tr('rate.loading');
             }
         }
 
@@ -607,13 +626,13 @@
             }
             if (cryptoUpdateTime) {
                 var now = new Date();
-                cryptoUpdateTime.textContent = 'آخر تحديث: ' + now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+                cryptoUpdateTime.textContent = tr('prices.updated') + ' ' + now.toLocaleTimeString(isEn() ? 'en-US' : 'ar-SA', { hour: '2-digit', minute: '2-digit' });
             }
         }
 
         function setUpdateError() {
             if (cryptoUpdateTime) {
-                cryptoUpdateTime.textContent = 'تعذر الاتصال - إعادة المحاولة...';
+                cryptoUpdateTime.textContent = tr('prices.retry');
             }
         }
 
@@ -691,6 +710,18 @@
             calcRegionEl.addEventListener('change', updateCalcRateNote);
         }
         updateCalcRateNote();
+
+        document.addEventListener('shift:i18n', function () {
+            updateCalcRateNote();
+            if (cryptoUpdateTime) {
+                var now = new Date();
+                cryptoUpdateTime.textContent = tr('prices.updated') + ' ' + now.toLocaleTimeString(isEn() ? 'en-US' : 'ar-SA', { hour: '2-digit', minute: '2-digit' });
+            }
+            var calcResultEl = document.getElementById('calcResult');
+            if (calcResultEl && calcResultEl.dataset && calcResultEl.dataset.currency) {
+                calcResultEl.textContent = calcResultEl.dataset.value + ' ' + getCurrencyName(calcResultEl.dataset.currency);
+            }
+        });
 
         // === Swiper Testimonials ===
         if (typeof Swiper !== 'undefined') {

@@ -20,7 +20,7 @@
         <div class="container">
             <a href="/" class="navbar-brand">
                 <img src="../images/shift-logo.jpg" alt="شعار SHIFT_YE" class="logo-img">
-                <div class="brand-text">SHIFT<span class="gold">_YE</span></div>
+                <div class="brand-text" data-i18n="nav.brand_html">SHIFT<span class="gold">_YE</span></div>
             </a>
 <ul class="navbar-nav">
                 <li><a href="/" class="nav-link" data-i18n="nav.home">الرئيسية</a></li>
@@ -90,7 +90,7 @@
 
                         <div class="calc-lanes">
                             <div class="form-group">
-                                <label for="calcFrom" data-i18n="calc.send">أنا أرسل</label>
+                                <label for="calcFrom" data-i18n-text="calc.send">أنا أرسل</label>
                                 <select id="calcFrom">
                                     <optgroup label="عملات رقمية" data-i18n-label="calc.grp_crypto">
                                         <option value="USDT">USDT (Tether)</option>
@@ -114,26 +114,26 @@
                                     </optgroup>
                                 </select>
                             </div>
-                            <button type="button" class="swap-btn" id="calcSwapBtn" title="عكس الوجهة" aria-label="عكس الوجهة"><i class="fas fa-right-left"></i></button>
+                            <button type="button" class="swap-btn" id="calcSwapBtn" data-i18n-title="calc.swap" data-i18n-aria="calc.swap" title="عكس الوجهة" aria-label="عكس الوجهة"><i class="fas fa-right-left"></i></button>
                             <div class="form-group">
-                                <label for="calcTo">أستلم</label>
+                                <label for="calcTo" data-i18n-text="calc.receive">أستلم</label>
                                 <select id="calcTo">
-                                    <optgroup label="العملات العربية">
-                                        <option value="YER">ريال يمني</option>
-                                        <option value="SAR">ريال سعودي</option>
-                                        <option value="OMR">ريال عماني</option>
-                                        <option value="KWD">دينار كويتي</option>
-                                        <option value="AED">درهم إماراتي</option>
-                                        <option value="EGP">جنيه مصري</option>
-                                        <option value="JOD">دينار أردني</option>
+                                    <optgroup label="العملات العربية" data-i18n-label="calc.grp_arab">
+                                        <option value="YER" data-i18n-text="calc.yer">ريال يمني</option>
+                                        <option value="SAR" data-i18n-text="calc.sar">ريال سعودي</option>
+                                        <option value="OMR" data-i18n-text="calc.omr">ريال عماني</option>
+                                        <option value="KWD" data-i18n-text="calc.kwd">دينار كويتي</option>
+                                        <option value="AED" data-i18n-text="calc.aed">درهم إماراتي</option>
+                                        <option value="EGP" data-i18n-text="calc.egp">جنيه مصري</option>
+                                        <option value="JOD" data-i18n-text="calc.jod">دينار أردني</option>
                                     </optgroup>
-                                    <optgroup label="عملات عالمية">
-                                        <option value="USD">دولار أمريكي</option>
-                                        <option value="EUR">يورو</option>
-                                        <option value="TRY">ليرة تركية</option>
-                                        <option value="CNY">يوان صيني</option>
+                                    <optgroup label="عملات عالمية" data-i18n-label="calc.grp_world">
+                                        <option value="USD" data-i18n-text="calc.usd">دولار أمريكي</option>
+                                        <option value="EUR" data-i18n-text="calc.eur">يورو</option>
+                                        <option value="TRY" data-i18n-text="calc.try">ليرة تركية</option>
+                                        <option value="CNY" data-i18n-text="calc.cny">يوان صيني</option>
                                     </optgroup>
-                                    <optgroup label="عملات رقمية">
+                                    <optgroup label="عملات رقمية" data-i18n-label="calc.grp_crypto">
                                         <option value="USDT">USDT</option>
                                         <option value="BTC">Bitcoin (BTC)</option>
                                         <option value="ETH">Ethereum (ETH)</option>
@@ -147,13 +147,13 @@
                             <option value="aden">aden</option>
                         </select>
 
-                        <div class="calc-rate-note" id="calcRateNote">جاري تحميل سعر الصرف...</div>
+                        <div class="calc-rate-note" id="calcRateNote" data-i18n-text="calc.rate_note">جاري تحميل سعر الصرف...</div>
 
-                        <button type="submit" class="btn btn-gold calc-submit"><i class="fas fa-calculator"></i> احسب المبلغ</button>
+                        <button type="submit" class="btn btn-gold calc-submit"><i class="fas fa-calculator"></i> <span data-i18n-text="calc.submit">احسب المبلغ</span></button>
                     </form>
 
                     <div class="calc-result calc-result-lg" id="calcResultBox">
-                        <div class="result-label">المبلغ المحول</div>
+                        <div class="result-label" data-i18n-text="calc.result">المبلغ المحول</div>
                         <div class="result-value" id="calcResult">0.00</div>
                         <div class="calc-unit-rate" id="calcUnitRate"></div>
                     </div>
@@ -162,11 +162,11 @@
                 <!-- Live rates panel -->
                 <div class="calc-panel">
                     <div class="calc-panel-head">
-                        <h3><i class="fas fa-chart-line"></i> أسعار السوق المباشرة</h3>
-                        <span class="rates-live-badge"><span class="dot"></span> مباشر</span>
+                        <h3><i class="fas fa-chart-line"></i> <span data-i18n-text="calc.market_prices">أسعار السوق المباشرة</span></h3>
+                        <span class="rates-live-badge"><span class="dot"></span> <span data-i18n-text="calc.live">مباشر</span></span>
                     </div>
 
-                    <div class="rates-region-tabs" role="group" aria-label="المنطقة">
+                    <div class="rates-region-tabs" role="group" data-i18n-aria="calc.region_label" aria-label="المنطقة">
                         <button type="button" class="region-tab active" data-region="sanaa" data-i18n-text="calc.sanaa_short">صنعاء</button>
                         <button type="button" class="region-tab" data-region="aden" data-i18n-text="calc.aden_short">عدن</button>
                     </div>
@@ -182,9 +182,9 @@
 
                     <p class="rates-footnote">
                         <i class="fas fa-info-circle"></i>
-                        <strong style="color: var(--text-light);">شراء</strong> = السعر الذي تحصل عليه عند بيعك،
-                        <strong style="color: var(--text-light);">بيع</strong> = السعر الذي تدفعه عند شرائك.
-                        تُحدَّث الأسعار تلقائياً كل 30 دقيقة حسب السوق في كل منطقة.
+                        <strong style="color: var(--text-light);" data-i18n-text="tbl.buy">شراء</strong> = <span data-i18n-text="calc.footnote_hint">السعر الذي تحصل عليه عند بيعك</span>،
+                        <strong style="color: var(--text-light);" data-i18n-text="tbl.sell">بيع</strong> = <span data-i18n-text="calc.footnote_hint2">السعر الذي تدفعه عند شرائك</span>.
+                        <span data-i18n-text="calc.footnote_note">تُحدَّث الأسعار تلقائياً كل 30 دقيقة حسب السوق في كل منطقة.</span>
                     </p>
                 </div>
 
@@ -195,9 +195,9 @@
     <section class="cta-section">
         <div class="container">
             <div class="cta-box" data-aos="zoom-in">
-                <h2 class="section-title">هل تريد <span class="gold">تنفيذ عملية</span> تداول؟</h2>
-                <p class="section-subtitle">تواصل معنا الآن ونوفر لك أفضل سعر وتكلفة تنفيذ</p>
-                <a href="/contact-Rb1jI0TUQy-s" class="btn btn-gold btn-lg"><i class="fas fa-paper-plane"></i> تواصل معنا</a>
+                <h2 class="section-title"><span data-i18n="cta.trade">هل تريد <span class="gold">تنفيذ عملية</span> تداول؟</span></h2>
+                <p class="section-subtitle" data-i18n-text="cta.trade_sub">تواصل معنا الآن ونوفر لك أفضل سعر وتكلفة تنفيذ</p>
+                <a href="/contact-Rb1jI0TUQy-s" class="btn btn-gold btn-lg"><i class="fas fa-paper-plane"></i> <span data-i18n-text="nav.contact">تواصل معنا</span></a>
             </div>
         </div>
     </section>
@@ -208,35 +208,35 @@
                 <div class="footer-about">
                     <img src="../images/shift-logo.jpg" alt="شعار SHIFT_YE" class="brand-logo">
                     <span class="brand-text">SHIFT<span class="gold">_YE</span></span>
-                    <p>نقدم لك حلولاً متكاملة في عالم العملات الرقمية والتقنية.</p>
+                    <p data-i18n="footer.about.home">نقدم لك حلولاً متكاملة في عالم العملات الرقمية والتقنية.</p>
                     <div class="footer-social">
-                        <a href="https://www.facebook.com/profile.php?id=61593960952629&mibextid=wwXIfr&mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://x.com/Cryptova_ye" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
-                        <a href="https://instagram.com/cryptova.ye" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
-                        <a href="https://t.me/Cryptova_ye" target="_blank" rel="noopener" aria-label="تيليجرام"><i class="fab fa-telegram-plane"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=61593960952629&mibextid=wwXIfr&mibextid=wwXIfr" target="_blank" rel="noopener" data-i18n-aria="social.facebook" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://x.com/Cryptova_ye" target="_blank" rel="noopener" data-i18n-aria="social.twitter" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com/cryptova.ye" target="_blank" rel="noopener" data-i18n-aria="social.instagram" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                        <a href="https://t.me/Cryptova_ye" target="_blank" rel="noopener" data-i18n-aria="social.telegram" aria-label="تيليجرام"><i class="fab fa-telegram-plane"></i></a>
                     </div>
                 </div>
                 <div class="footer-links">
-                    <h4>روابط سريعة</h4>
+                    <h4 data-i18n-text='footer.quick_links'>روابط سريعة</h4>
                     <ul>
-                        <li><a href="/">الرئيسية</a></li>
-                        <li><a href="/calc-cRYxT3jlWq5Z">الحاسبة</a></li>
-                        <li><a href="/price-uaLfoLjpibrD">الأسعار</a></li>
-                        <li><a href="/contact-Rb1jI0TUQy-s">تواصل معنا</a></li>
+                        <li><a href="/" data-i18n-text="nav.home">الرئيسية</a></li>
+                        <li><a href="/calc-cRYxT3jlWq5Z" data-i18n-text="nav.calc">الحاسبة</a></li>
+                        <li><a href="/price-uaLfoLjpibrD" data-i18n-text="nav.prices">الأسعار</a></li>
+                        <li><a href="/contact-Rb1jI0TUQy-s" data-i18n-text="nav.contact">تواصل معنا</a></li>
                     </ul>
                 </div>
                 <div class="footer-contact">
-                    <h4>تواصل معنا</h4>
+                    <h4 data-i18n-text='footer.contact_title'>تواصل معنا</h4>
                     <ul>
-                        <li><i class="fas fa-map-marker-alt"></i><span>صنعاء، اليمن</span></li>
+                        <li><i class="fas fa-map-marker-alt"></i><span data-i18n="footer.location">صنعاء، اليمن</span></li>
                         <li><i class="fas fa-phone"></i><span dir="ltr">+967 785 628 409</span></li>
                         <li><i class="fas fa-envelope"></i><span>cryptovaye@gmail.com</span></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <span>&copy; 2026 SHIFT_YE. جميع الحقوق محفوظة.</span>
-                <span>صُنع بـ <i class="fas fa-heart" style="color: var(--accent-gold);"></i> في اليمن</span>
+                <span>&copy; 2026 SHIFT_YE. <span data-i18n-text="footer.rights">جميع الحقوق محفوظة.</span></span>
+                <span data-i18n="footer.made">صُنع بـ <i class="fas fa-heart" style="color: var(--accent-gold);"></i> في اليمن</span>
             </div>
         </div>
     </footer>
@@ -244,10 +244,13 @@
     <a href="https://wa.me/967785628409" target="_blank" class="whatsapp-float" data-i18n-aria="cta.whatsapp"><i class="fab fa-whatsapp"></i></a>
     <button class="scroll-top" data-i18n-aria="nav.top"><i class="fas fa-chevron-up"></i></button>
 
-    <script src="../js/i18n.js?v=11"></script>
-    <script src="../js/main.js?v=10"></script>
+    <script src="../js/i18n.js?v=12"></script>
+    <script src="../js/main.js?v=12"></script>
     <script>
         (function() {
+            function tr(key, fallback) {
+                try { return (window.I18N && window.I18N.t) ? window.I18N.t(key) : (fallback || key); } catch (e) { return fallback || key; }
+            }
             var form = document.getElementById('cryptoCalcForm');
             var calcApi = window.__cvCalc;
 
@@ -307,7 +310,7 @@
                 var b = calcApi.getYerRatePair(to);
                 if (!a || !b) return;
                 var per = a.buy / b.sell;
-                var name = calcApi.CURRENCY_NAMES[to] || to;
+                var name = tr('calc.' + to.toLowerCase(), calcApi.CURRENCY_NAMES[to] || to);
                 el.textContent = '1 ' + from + ' = ' + per.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + name;
             }
 
@@ -342,16 +345,16 @@
                 var live = window.__cryptoLiveRates || {};
                 // [code, arabic name, flag, glyph, brand color]
                 var rows = [
-                    ['usd', 'دولار أمريكي', '🇺🇸', '$', '#85bb65'],
-                    ['sar', 'ريال سعودي', '🇸🇦', 'ر.س', '#1e7a3a'],
-                    ['aed', 'درهم إماراتي', '🇦🇪', 'د.إ', '#2e9e6b'],
-                    ['omr', 'ريال عماني', '🇴🇲', 'ر.ع', '#c1272d'],
-                    ['kwd', 'دينار كويتي', '🇰🇼', 'د.ك', '#2f6fd0'],
-                    ['jod', 'دينار أردني', '🇯🇴', 'د.أ', '#1f4e79'],
-                    ['egp', 'جنيه مصري', '🇪🇬', 'ج.م', '#c9a227'],
-                    ['eur', 'يورو', '🇪🇺', '€', '#2d64bc'],
-                    ['try', 'ليرة تركية', '🇹🇷', '₺', '#d43b3b'],
-                    ['cny', 'يوان صيني', '🇨🇳', '¥', '#d8aa2a'],
+                    ['usd', 'rate.name.usd', '🇺🇸', '$', '#85bb65'],
+                    ['sar', 'rate.name.sar', '🇸🇦', 'ر.س', '#1e7a3a'],
+                    ['aed', 'rate.name.aed', '🇦🇪', 'د.إ', '#2e9e6b'],
+                    ['omr', 'rate.name.omr', '🇴🇲', 'ر.ع', '#c1272d'],
+                    ['kwd', 'rate.name.kwd', '🇰🇼', 'د.ك', '#2f6fd0'],
+                    ['jod', 'rate.name.jod', '🇯🇴', 'د.أ', '#1f4e79'],
+                    ['egp', 'rate.name.egp', '🇪🇬', 'ج.م', '#c9a227'],
+                    ['eur', 'rate.name.eur', '🇪🇺', '€', '#2d64bc'],
+                    ['try', 'rate.name.try', '🇹🇷', '₺', '#d43b3b'],
+                    ['cny', 'rate.name.cny', '🇨🇳', '¥', '#d8aa2a'],
                 ];
                 var fmt = function(n) {
                     if (!n) return '—';
@@ -365,11 +368,11 @@
                             '<span class="rate-sym" style="border-color:' + r[4] + '44;color:' + r[4] + ';background:' + r[4] + '14;">' + r[3] + '</span>' +
                             '<span class="rate-info">' +
                                 '<span class="rate-code">' + r[0].toUpperCase() + '</span>' +
-                                '<span class="rate-cname">' + r[1] + '</span>' +
+                                '<span class="rate-cname">' + tr(r[1]) + '</span>' +
                             '</span>' +
                         '</span></td>' +
-                        '<td class="rate-val buy">' + fmt(p.buy) + ' <span class="rate-unit">ر.ي</span></td>' +
-                        '<td class="rate-val sell">' + fmt(p.sell) + ' <span class="rate-unit">ر.ي</span></td>' +
+                        '<td class="rate-val buy">' + fmt(p.buy) + ' <span class="rate-unit">' + tr('calc.yer_unit') + '</span></td>' +
+                        '<td class="rate-val sell">' + fmt(p.sell) + ' <span class="rate-unit">' + tr('calc.yer_unit') + '</span></td>' +
                     '</tr>';
                 }).join('');
                 html += '<tr class="rate-divider"><td colspan="3"></td></tr>';
@@ -385,7 +388,7 @@
                         '<span class="rate-sym" style="border-color:' + c[3] + '44;color:' + c[3] + ';background:' + c[3] + '14;">' + c[2] + '</span>' +
                         '<span class="rate-info">' +
                             '<span class="rate-code">' + c[0] + '</span>' +
-                            '<span class="rate-cname">سعر السوق العالمي</span>' +
+                            '<span class="rate-cname">' + tr('rate.market') + '</span>' +
                         '</span>' +
                     '</span></td><td class="rate-val market" colspan="2">' + price + '</td></tr>';
                 });
@@ -405,6 +408,12 @@
 
             updateSuffix();
             renderRatesTable();
+
+            document.addEventListener('shift:i18n', function () {
+                renderRatesTable();
+                if (calcApi && calcApi.updateCalcRateNote) calcApi.updateCalcRateNote();
+                updateUnitRate();
+            });
         })();
     </script>
 </body>
