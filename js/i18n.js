@@ -412,6 +412,8 @@
         // ─── Tech services page: how we work (different steps) ───
         'svcp.tech.wh_title_part1': { ar: 'رحلتك معنا', en: 'Your Journey' },
         'svcp.tech.wh_title_part2': { ar: 'في 4 خطوات', en: 'in 4 Steps' },
+        'svcp.steps.step': { ar: 'خطوة', en: 'Step' },
+        'footer.quick_links': { ar: 'روابط سريعة', en: 'Quick Links' },
     };
 
     var DEFAULT_DIRS = { ar: 'rtl', en: 'ltr' };
