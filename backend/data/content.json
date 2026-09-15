@@ -35,8 +35,8 @@
     {
       "id": "tech-web-dev",
       "category": "tech",
-      "title": "تطوير مواقع الويب",
-      "description": "تصميم وتطوير مواقع ويب احترافية ومتجاوبة باستخدام أحدث التقنيات مثل React، Next.js، و PHP",
+      "title": "تصميم وتطوير المواقع",
+      "description": "مواقع احترافية مصممة لتناسب نشاطك وتحقق أهدافك.",
       "features": [
         "مواقع تعريفية",
         "متاجر إلكترونية",
@@ -45,7 +45,7 @@
       ],
       "icon": "fa-globe",
       "image": "/images/IMG-20260904-WA0009-1788479602326.jpg",
-      "order": 3,
+      "order": 1,
       "visible": true
     },
     {
@@ -83,8 +83,8 @@
     {
       "id": "tech-app-dev",
       "category": "tech",
-      "title": "تطوير تطبيقات الهاتف",
-      "description": "تطوير تطبيقات الهاتف الذكي لنظامي iOS و Android باستخدام Flutter و React Native",
+      "title": "تصميم وتطوير تطبيقات الموبايل",
+      "description": "تطبيقات Android وiOS بتجربة استخدام عصرية وسهلة.",
       "features": [
         "تطبيقات iOS",
         "تطبيقات Android",
@@ -93,7 +93,7 @@
       ],
       "icon": "fa-mobile-alt",
       "image": "/images/IMG-20260904-WA0010-1788479634887.jpg",
-      "order": 5,
+      "order": 2,
       "visible": true
     },
     {
@@ -142,7 +142,7 @@
       "icon": "fa-cogs",
       "image": "/images/IMG-20260904-WA0011-1788479662101.jpg",
       "order": 7,
-      "visible": true
+      "visible": false
     },
     {
       "id": "tech-project-mgmt",
@@ -158,7 +158,7 @@
       "icon": "fa-project-diagram",
       "image": "/images/IMG-20260904-WA0012-1788479690452.jpg",
       "order": 9,
-      "visible": true
+      "visible": false
     },
     {
       "id": "tech-consulting",
@@ -174,13 +174,13 @@
       "icon": "fa-lightbulb",
       "image": "/images/IMG-20260904-WA0014-1788479727029.jpg",
       "order": 11,
-      "visible": true
+      "visible": false
     },
     {
       "id": "tech-uiux",
       "category": "tech",
-      "title": "تصميم UI/UX",
-      "description": "تصميم واجهات مستخدم جذابة وتجربة مستخدم سلسة تدعم نجاح منتجاتك الرقمية",
+      "title": "تصميم واجهات وتجارب المستخدم UI/UX",
+      "description": "نصمم واجهات واضحة وتجارب استخدام تجعل المنتج أسهل وأكثر احترافية.",
       "features": [
         "تصميم واجهات",
         "تجربة مستخدم",
@@ -189,14 +189,14 @@
       ],
       "icon": "fa-paint-brush",
       "image": "/images/IMG-20260904-WA0013-1788479755059.jpg",
-      "order": 14,
+      "order": 3,
       "visible": true
     },
     {
       "id": "tech-web-systems",
       "category": "tech",
-      "title": "بناء أنظمة وتطبيقات الويب",
-      "description": "نصمم ونبني أنظمة وتطبيقات ويب متكاملة مصممة لاحتياجات أعمالك، من النمذجة إلى الإطلاق مع أفضل الممارسات والأمان.",
+      "title": "الأنظمة والحلول الرقمية",
+      "description": "أنظمة مخصصة لإدارة العمليات والبيانات والخدمات حسب احتياج المشروع",
       "features": [
         "نظم إدارة متكاملة",
         "تطبيقات ويب مخصصة",
@@ -205,7 +205,7 @@
       ],
       "icon": "fa-layer-group",
       "image": "/images/IMG-20260904-WA0021-1788481668674.jpg",
-      "order": 15,
+      "order": 4,
       "visible": true
     },
     {
@@ -222,7 +222,7 @@
       "icon": "fa-graduation-cap",
       "image": "/images/IMG-20260904-WA0025-1788481707399.jpg",
       "order": 16,
-      "visible": true
+      "visible": false
     }
   ],
   "pricing": {
