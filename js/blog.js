@@ -32,8 +32,25 @@
         try {
             const date = new Date(dateStr);
             if (isNaN(date.getTime())) return 'تاريخ غير محدد';
-            const y = date.getFullYear();
             return date.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+        } catch (e) {
+            return 'تاريخ غير محدد';
+        }
+    }
+
+    function timeAgo(dateStr) {
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return 'تاريخ غير محدد';
+            const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+            if (seconds < 60) return 'الآن';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return 'قبل ' + minutes + (minutes === 1 ? ' دقيقة' : minutes === 2 ? ' دقيقتين' : minutes <= 10 ? ' دقائق' : ' دقيقة');
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return 'قبل ' + hours + (hours === 1 ? ' ساعة' : hours === 2 ? ' ساعتين' : hours <= 10 ? ' ساعات' : ' ساعة');
+            const days = Math.floor(hours / 24);
+            if (days < 30) return 'قبل ' + days + (days === 1 ? ' يوم' : days === 2 ? ' يومين' : days <= 10 ? ' أيام' : ' يوم');
+            return formatDate(dateStr);
         } catch (e) {
             return 'تاريخ غير محدد';
         }
@@ -69,7 +86,7 @@
                     <div class="blog-meta">
                         <span class="blog-tag">${label}</span>
                         <span><i class="far fa-calendar"></i> ${formatDate(post.date)}</span>
-                        <span><i class="far fa-clock"></i> ${post.readTime} دقائق</span>
+                        <span><i class="far fa-clock"></i> ${timeAgo(post.date)}</span>
                     </div>
                     <h3>${escapeHtml(post.title)}</h3>
                     <p>${escapeHtml(post.excerpt)}</p>
@@ -255,7 +272,7 @@
                 document.getElementById('postTag').textContent = label;
                 document.getElementById('postTitle').textContent = post.title;
                 document.getElementById('postDate').textContent = formatDate(post.date);
-                document.getElementById('postReadTime').textContent = post.readTime + ' دقائق قراءة';
+                document.getElementById('postReadTime').textContent = timeAgo(post.date);
                 document.getElementById('postSource').textContent = post.source || 'SHIFT_YE';
                 document.getElementById('postBodyContent').textContent = post.content || post.excerpt || '';
 
