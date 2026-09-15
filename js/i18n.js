@@ -117,18 +117,14 @@
         'stat.satisfaction': { ar: 'نسبة الرضا %', en: 'Satisfaction Rate %' },
 
         // ─── Advantages ───
-        'adv.secure.title': { ar: 'أمان وموثوقية', en: 'Secure & Trustworthy' },
-        'adv.secure.desc': { ar: 'معاملات رقمية موثوقة، وإجراءات واضحة تضمن لك تجربة آمنة واطمئنانًا في كل تعامل', en: 'Reliable digital transactions and clear procedures for a safe, worry-free experience.' },
+        'adv.secure.title': { ar: 'أمان ووضوح', en: 'Secure & Clear' },
+        'adv.secure.desc': { ar: 'تعاملات واضحة وإجراءات مباشرة.', en: 'Clear transactions and straightforward procedures.' },
         'adv.fast.title': { ar: 'سرعة التنفيذ', en: 'Fast Execution' },
-        'adv.fast.desc': { ar: 'نلتزم بسرعة معالجة جميع الطلبات والمعاملات. فريقنا يعمل على مدار الساعة لتلبية احتياجاتك', en: 'We process all requests fast. Our team works around the clock to serve you.' },
-        'adv.price.title': { ar: 'أسعار تنافسية', en: 'Competitive Prices' },
-        'adv.price.desc': { ar: 'نقدم أفضل الأسعار في السوق مع عمولات منخفضة وشفافية كاملة في جميع المعاملات', en: 'Best market prices with low commissions and full transparency on all transactions.' },
-        'adv.support.title': { ar: 'دعم فني متواصل', en: 'Ongoing Support' },
-        'adv.support.desc': { ar: 'فريق دعم فني متخصص متاح على مدار الساعة للإجابة على استفساراتكم ومساعدتكم', en: 'A dedicated support team available around the clock for your questions and help.' },
-        'adv.exp.title': { ar: 'خبرة واسعة', en: 'Broad Expertise' },
-        'adv.exp.desc': { ar: 'فريق من المتخصصين ذوي الخبرة في مجال العملات الرقمية والبرمجة والتقنية', en: 'A team of specialists experienced in crypto, programming and technology.' },
-        'adv.custom.title': { ar: 'حلول مخصصة', en: 'Custom Solutions' },
-        'adv.custom.desc': { ar: 'نقدم حلولاً تقنية مخصصة تتناسب مع احتياجات كل عميل ومشروعه بطريقة فريدة', en: 'Tailored technical solutions that fit each client and project in a unique way.' },
+        'adv.fast.desc': { ar: 'تنفيذ سريع ومتابعة مستمرة.', en: 'Quick execution with ongoing follow-up.' },
+        'adv.price.title': { ar: 'أسعار واضحة', en: 'Clear Pricing' },
+        'adv.price.desc': { ar: 'أسعار وعمولات واضحة قبل التنفيذ.', en: 'Clear prices and fees before you proceed.' },
+        'adv.custom.title': { ar: 'حلول حسب احتياجك', en: 'Solutions for Your Needs' },
+        'adv.custom.desc': { ar: 'من معاملة رقمية إلى مشروع تقني متكامل.', en: 'From a digital transaction to a full technical project.' },
 
         // ─── CTA ───
         'cta.title_part1': { ar: 'أنجز معاملاتك الرقمية', en: 'Complete Your Transactions' },
